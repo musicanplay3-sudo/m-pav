@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NBM - Vídeos e MP3</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <button class="btn-toggle-sidebar" id="btnToggleSidebar">☰ Filtros</button>
+
+    <aside id="sidebar">
+        
+        <h2>Filtros e Busca</h2>
+
+        <div class="form-group">
+            <label for="searchGeneral">Pesquisa Geral:</label>
+            <input type="text" id="searchGeneral" placeholder="Título, compositor, livro...">
+        </div>
+        <div class="form-group">
+            <label for="filterComposer">Compositor:</label>
+            <select id="filterComposer"><option value="">Compositores</option></select>
+        </div>
+        <div class="form-group">
+            <label for="filterBook">Referência:</label>
+            <select id="filterBook"><option value="">Referência</option></select>
+        </div>
+        <div class="form-group">
+            <label>Visualização:</label>
+            <div class="radio-group">
+                <label><input type="radio" name="viewMode" value="all" checked> Todos</label>
+                <label><input type="radio" name="viewMode" value="single"> Individual</label>
+            </div>
+        </div>
+        <button class="btn-clear" id="btnClear">Limpar Filtros</button>
+
+        <!-- PLAYLIST DE VÍDEOS -->
+        <h3>
+            <span>🎬 Fila de Vídeos</span>
+            <button class="toggle-btn" onclick="togglePlaylist('video')">👁️</button>
+        </h3>
+        <div class="playlist-section">
+            <div class="playlist-header">
+                <span>Vídeos</span>
+                <div class="playlist-actions">
+                    <button onclick="savePlaylist('video')">💾</button>
+                    <button onclick="exportPlaylist('video')">📤</button>
+                    <button onclick="clearPlaylist('video')">❌</button>
+                </div>
+            </div>
+            <div class="playlist-list" id="videoPlaylistItems">
+                <div style="color:#bdc3c7;font-size:0.75rem;text-align:center;padding:5px;">Vazia</div>
+            </div>
+        </div>
+
+        <!-- PLAYLIST DE MP3 -->
+        <h3>
+            <span>🎵 Fila de MP3</span>
+            <button class="toggle-btn" onclick="togglePlaylist('mp3')">👁️</button>
+        </h3>
+        <div class="playlist-section">
+            <div class="playlist-header">
+                <span>MP3</span>
+                <div class="playlist-actions">
+                    <button onclick="savePlaylist('mp3')">💾</button>
+                    <button onclick="exportPlaylist('mp3')">📤</button>
+                    <button onclick="clearPlaylist('mp3')">❌</button>
+                </div>
+            </div>
+            <div class="playlist-list" id="mp3PlaylistItems">
+                <div style="color:#bdc3c7;font-size:0.75rem;text-align:center;padding:5px;">Vazia</div>
+            </div>
+        </div>
+    </aside>
+
+    <div class="resizer" id="resizerLeft"></div>
+
+    <div class="main-wrapper">
+        <main>
+            <div class="header-main">
+                <h1>M-pav</h1>
+                
+                <div class="header-controls">
+                    <button class="btn-toggle-view" id="btnToggleView" onclick="toggleViewMode()">
+                        <span id="viewIcon">☰</span> <span id="viewLabel">Lista</span>
+                    </button>
+                </div>
+            </div>
+            <div class="catalog-list" id="catalogGrid"></div>
+        </main>
+
+        <div class="player-horizontal-container">
+            <div class="player-left" id="playerLeft">
+                <div id="playerPlaceholder" style="color:#666;font-size:0.9rem;text-align:center;padding:10px;">
+                    Selecione uma música
+                </div>
+            </div>
+            <div class="player-right">
+                <div class="now-playing-label">Tocando Agora</div>
+                <h4 id="currentPlayingTitle">Nenhuma música</h4>
+                <p id="currentPlayingMeta">Escolha uma música no catálogo</p>
+                <div class="player-controls">
+                    <button onclick="playPrevious()">⏮ Anterior</button>
+                    <button onclick="playNext()">Próxima ⏭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="resizer" id="resizerRight" style="display:none;"></div>
+
+    <section class="pdf-preview-panel" id="pdfPreviewPanel">
+        <div class="pdf-preview-header">
+            <h3 id="pdfPreviewTitle">Partitura</h3>
+            <button class="btn-close-preview" id="btnClosePreview">&times;</button>
+        </div>
+        <iframe class="pdf-frame" id="pdfIframe" src=""></iframe>
+    </section>
+
+    <script src="js/dados.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        
+    </script>
+</body>
+</html>
