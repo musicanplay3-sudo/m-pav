@@ -19,12 +19,12 @@ const musicDatabase = [
     },
     {
         id: 3,
-        title: "Canção de Ninar",
-        composer: "Autor Desconhecido",
+        title: "Love Theme",
+        composer: "Catherine Rollin",
         book: "Músicas Populares",
-        pdfUrl: "",
+        pdfUrl: "23857-Love-Theme-Catherine-Rollin.pdf",
         youtubeUrl: "",
-        mp3Url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" // só MP3
+        mp3Url: "https://blog-imgs-201.fc2.com/n/b/m/nbmescolademusica/202607030237243ed.mp3" // só MP3
     }
 ];
 
