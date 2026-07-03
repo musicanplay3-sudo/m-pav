@@ -21,8 +21,8 @@ const musicDatabase = [
         id: 3,
         title: "Love Theme",
         composer: "Catherine Rollin",
-        book: "Músicas Populares",
-        pdfUrl: "23857-Love-Theme-Catherine-Rollin.pdf",
+        book: "Avulso",
+        pdfUrl: "partituras/23857.pdf",
         youtubeUrl: "",
         mp3Url: "https://blog-imgs-201.fc2.com/n/b/m/nbmescolademusica/202607030237243ed.mp3" // só MP3
     }
