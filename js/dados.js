@@ -1,6 +1,6 @@
 const musicDatabase = [
 { id: 23957, title: "23957 - Love Theme", composer: "Catherine Rollin", book: "Avulso", pdfUrl: "partituras/23957.pdf", youtubeUrl: "", mp3Url: "" },
-{ id: 23958, title: "23958 - 1st Inversion Boogie", composer: "James Bastien", book: "7029-PDF", pdfUrl: "partituras/23958.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23958, title: "23958 - 1st Inversion Boogie", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23958.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 23959, title: "23959 - 2nd Inversion Rock", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23959.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 23960, title: "23960 - A Visit to the Royal Court", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23960.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 23961, title: "23961 - Acrobats", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23961.pdf", youtubeUrl: "", mp3Url: "" },
