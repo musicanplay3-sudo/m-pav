@@ -1,41 +1,29 @@
 const musicDatabase = [
-    {
-        id: 1,
-        title: "A Casa",
-        composer: "Vinicius de Moraes / Toquinho",
-        book: "Arca de Noé",
-        pdfUrl: "partituras/a_casa.pdf",
-        youtubeUrl: "https://www.youtube.com/watch?v=K3DEgVGA0Gs&list=RDK3DEgVGA0Gs&start_radio=1",
-        mp3Url: "" // <-- sem MP3
-    },
-    {
-        id: 2,
-        title: "O Caderno",
-        composer: "Toquinho",
-        book: "Música na Infância Vol. 1",
-        pdfUrl: "", // <-- sem PDF
-        youtubeUrl: "https://www.youtube.com/watch?v=_0mpldsbZdc",
-        mp3Url: "https://blog-imgs-201.fc2.com/n/b/m/nbmescolademusica/20260703001739f89.mp3"
-    },
-    {
-        id: 23957,
-        title: "Love Theme",
-        composer: "Catherine Rollin",
-        book: "Avulso",
-        pdfUrl: "partituras/23957.pdf",
-        youtubeUrl: "",
-        mp3Url: "https://blog-imgs-201.fc2.com/n/b/m/nbmescolademusica/202607030237243ed.mp3" // só MP3
-    },
-
-    {
-    id: 23958,
-    title: "1st Inversion Boogie",
-    composer: "James Bastien",
-    book: "7029 - PDF",
-    pdfUrl: "partituras/23958.pdf",
-    youtubeUrl: "",
-    mp3Url: ""
-}
+{ id: 23957, title: "23957 - Love Theme", composer: "Catherine Rollin", book: "Avulso", pdfUrl: "partituras/23957.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23958, title: "23958 - 1st Inversion Boogie", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23958.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23959, title: "23959 - 2nd Inversion Rock", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23959.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23960, title: "23960 - A Visit to the Royal Court", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23960.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23961, title: "23961 - Acrobats", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23961.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23962, title: "23962 - Blue Grass", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23962.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23963, title: "23963 - Evening Serenade", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23963.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23964, title: "23964 - He's Got the Whole World In His Hands", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23964.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23965, title: "23965 - Minuet", composer: "Johann Christian Bach", book: "7029 - PDF", pdfUrl: "partituras/23965.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23966, title: "23966 - New Orleans Carnival", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23966.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23967, title: "23967 - Parallel Bars", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23967.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23968, title: "23968 - Romance", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23968.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23969, title: "23969 - Sonatina in C", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23969.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23970, title: "23970 - Space Ride", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23970.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23971, title: "23971 - Spanish Guitars", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23971.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23972, title: "23972 - Spooky House", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23972.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23973, title: "23973 - Swiss Music Boxх", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23973.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23974, title: "23974 - The Bee", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23974.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23975, title: "23975 - The Midnight Express", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23975.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23976, title: "23976 - The Mill Wheel", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23976.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23977, title: "23977 - The Streets of Laredo", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23977.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23978, title: "23978 - Wild Rider", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23978.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23979, title: "23979 - William Tell Overture", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23979.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23980, title: "23980 - Windsong", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23980.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23981, title: "23981 - Winter Celebration", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23981.pdf", youtubeUrl: "", mp3Url: "" }
 ];
 
 function getYouTubeId(url) {
