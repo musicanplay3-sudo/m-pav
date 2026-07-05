@@ -16,7 +16,7 @@ const musicDatabase = [
 { id: 23971, title: "23971 - Spanish Guitars", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23971.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 23972, title: "23972 - Spooky House", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23972.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 23973, title: "23973 - Swiss Music Boxх", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23973.pdf", youtubeUrl: "", mp3Url: "" },
-{ id: 23974, title: "23974 - The Bee", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23974.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23974, title: "23974 - The Bee", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23974.pdf", youtubeUrl: "https://www.youtube.com/watch?v=Ih-zaPky4TU", mp3Url: "" },
 { id: 23975, title: "23975 - The Midnight Express", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23975.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 23976, title: "23976 - The Mill Wheel", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23976.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 23977, title: "23977 - The Streets of Laredo", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23977.pdf", youtubeUrl: "", mp3Url: "" },
