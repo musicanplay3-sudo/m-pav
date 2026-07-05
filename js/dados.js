@@ -25,7 +25,17 @@ const musicDatabase = [
         pdfUrl: "partituras/23957.pdf",
         youtubeUrl: "",
         mp3Url: "https://blog-imgs-201.fc2.com/n/b/m/nbmescolademusica/202607030237243ed.mp3" // só MP3
-    }
+    },
+
+    {
+    id: 23958,
+    title: "1st Inversion Boogie",
+    composer: "James Bastien",
+    book: "7029 - PDF",
+    pdfUrl: "partituras/23958.pdf",
+    youtubeUrl: "",
+    mp3Url: ""
+}
 ];
 
 function getYouTubeId(url) {
