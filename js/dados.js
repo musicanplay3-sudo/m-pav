@@ -23,7 +23,7 @@ const musicDatabase = [
 { id: 23978, title: "23978 - Wild Rider", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23978.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 23979, title: "23979 - William Tell Overture", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23979.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 23980, title: "23980 - Windsong", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23980.pdf", youtubeUrl: "", mp3Url: "" },
-{ id: 23981, title: "23981 - Winter Celebration", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23981.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23981, title: "23981 - Winter Celebration", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23981.pdf", youtubeUrl: "", mp3Url: "" }
 
 ];
 
