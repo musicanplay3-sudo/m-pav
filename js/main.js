@@ -147,114 +147,145 @@
         }
 
         // ============================================================
-        // YOUTUBE API READY
-        // ============================================================
-        function onYouTubeIframeAPIReady() {
-            const placeholder = document.createElement('div');
-            placeholder.id = 'youtube-global-player-placeholder';
-            placeholder.style.display = 'none';
-            document.body.appendChild(placeholder);
-            globalPlayer = new YT.Player('youtube-global-player-placeholder', {
-                height: '100%',
-                width: '100%',
-                playerVars: { origin: window.location.origin, enablejsapi: 1, rel: 0 },
-                events: {
-                    onStateChange: function(event) {
-                        if (event.data === YT.PlayerState.ENDED) {
-                            playNext();
+// YOUTUBE API READY
+// ============================================================
+function onYouTubeIframeAPIReady() {
+    // Cria um container para o player na área de exibição
+    const container = document.createElement('div');
+    container.id = 'youtube-player-container';
+    container.style.width = '100%';
+    container.style.height = '100%';
+    // Se já existir um container, substitui
+    const oldContainer = document.getElementById('youtube-player-container');
+    if (oldContainer) oldContainer.remove();
+    playerLeft.innerHTML = '';
+    playerLeft.appendChild(container);
+
+    globalPlayer = new YT.Player('youtube-player-container', {
+        height: '100%',
+        width: '100%',
+        playerVars: { 
+            origin: window.location.origin, 
+            enablejsapi: 1, 
+            rel: 0,
+            autoplay: 0 // não começa automaticamente
+        },
+        events: {
+            onStateChange: function(event) {
+                if (event.data === YT.PlayerState.ENDED) {
+                    playNext();
+                }
+            }
+        }
+    });
+}
+
+// ============================================================
+// FUNÇÃO PRINCIPAL DE REPRODUÇÃO
+// ============================================================
+function playMusic(musicId, forceMp3 = false) {
+    const music = musicDatabase.find(m => m.id === musicId);
+    if (!music) return;
+
+    // Verifica disponibilidade
+    const ytId = localGetYouTubeId(music.youtubeUrl);
+    const hasMp3 = music.mp3Url && music.mp3Url.trim() !== '';
+    if (forceMp3 && !hasMp3) {
+        alert('MP3 não disponível para esta música.');
+        return;
+    }
+    if (!forceMp3 && !ytId && !hasMp3) {
+        alert('Nenhuma mídia disponível para esta música.');
+        return;
+    }
+
+    currentlyPlayingMusicId = musicId;
+    currentPlayingTitle.textContent = music.title;
+    currentPlayingMeta.textContent = `${music.composer} | ${music.book}`;
+
+    // Limpa áudio anterior
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+    }
+
+    // Se for MP3 ou fallback para MP3
+    if (forceMp3 || (!ytId && hasMp3)) {
+        // Se for força MP3 ou sem YouTube, usa áudio
+        const audio = document.createElement('audio');
+        audio.src = music.mp3Url;
+        audio.controls = true;
+        audio.autoplay = true;
+        audio.style.width = '100%';
+        audio.style.height = '50px';
+        audio.style.background = '#1a1a1a';
+        audio.style.borderRadius = '4px';
+        // Limpa o playerLeft e coloca o áudio
+        // Remove o container do YouTube se existir
+        const ytContainer = document.getElementById('youtube-player-container');
+        if (ytContainer) ytContainer.remove();
+        playerLeft.innerHTML = '';
+        playerLeft.appendChild(audio);
+        currentAudio = audio;
+        activePlaylistType = 'mp3';
+        audio.addEventListener('ended', () => playNext());
+    } else if (ytId) {
+        // Tem YouTube, usa o player global
+        // Limpa o playerLeft e coloca o container do YouTube
+        // Se o container não existir, cria; senão, reaproveita
+        let container = document.getElementById('youtube-player-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'youtube-player-container';
+            container.style.width = '100%';
+            container.style.height = '100%';
+        }
+        // Remove qualquer áudio ou iframe solto
+        playerLeft.innerHTML = '';
+        playerLeft.appendChild(container);
+
+        // Se o globalPlayer já existir, carrega o vídeo
+        if (globalPlayer && typeof globalPlayer.loadVideoById === 'function') {
+            globalPlayer.loadVideoById(ytId);
+            globalPlayer.playVideo();
+        } else {
+            // Se ainda não tiver player, cria (fallback)
+            // Mas normalmente a API já chamou onYouTubeIframeAPIReady
+            // Vamos criar novamente se necessário
+            if (typeof YT !== 'undefined' && YT.Player) {
+                globalPlayer = new YT.Player('youtube-player-container', {
+                    height: '100%',
+                    width: '100%',
+                    playerVars: { origin: window.location.origin, enablejsapi: 1, rel: 0 },
+                    events: {
+                        onStateChange: function(event) {
+                            if (event.data === YT.PlayerState.ENDED) {
+                                playNext();
+                            }
                         }
                     }
-                }
-            });
-        }
-
-        // ============================================================
-        // FUNÇÃO PRINCIPAL DE REPRODUÇÃO
-        // ============================================================
-        function playMusic(musicId, forceMp3 = false) {
-            const music = musicDatabase.find(m => m.id === musicId);
-            if (!music) return;
-
-            // Verifica se a mídia está disponível
-            const ytId = localGetYouTubeId(music.youtubeUrl);
-            const hasMp3 = music.mp3Url && music.mp3Url.trim() !== '';
-            if (forceMp3 && !hasMp3) {
-                alert('MP3 não disponível para esta música.');
-                return;
-            }
-            if (!forceMp3 && !ytId && !hasMp3) {
-                alert('Nenhuma mídia disponível para esta música.');
-                return;
-            }
-
-            currentlyPlayingMusicId = musicId;
-            currentPlayingTitle.textContent = music.title;
-            currentPlayingMeta.textContent = `${music.composer} | ${music.book}`;
-
-            if (currentAudio) {
-                currentAudio.pause();
-                currentAudio = null;
-            }
-            const oldIframe = playerLeft.querySelector('iframe');
-            if (oldIframe) oldIframe.remove();
-
-            if (forceMp3 && hasMp3) {
-                const audio = document.createElement('audio');
-                audio.src = music.mp3Url;
-                audio.controls = true;
-                audio.autoplay = true;
-                audio.style.width = '100%';
-                audio.style.height = '50px';
-                audio.style.background = '#1a1a1a';
-                audio.style.borderRadius = '4px';
-                playerLeft.innerHTML = '';
-                playerLeft.appendChild(audio);
-                currentAudio = audio;
-                activePlaylistType = 'mp3';
-                audio.addEventListener('ended', () => playNext());
-            } else if (ytId && !forceMp3) {
-                const iframe = document.createElement('iframe');
-                iframe.id = 'youtube-player-' + musicId;
-                iframe.src = `https://www.youtube.com/embed/${ytId}?enablejsapi=1&autoplay=1&rel=0`;
-                iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-                iframe.allowFullscreen = true;
-                iframe.style.width = '100%';
-                iframe.style.height = '100%';
-                iframe.style.border = '0';
-                playerLeft.innerHTML = '';
-                playerLeft.appendChild(iframe);
-                activePlaylistType = 'video';
-                if (globalPlayer && typeof globalPlayer.loadVideoById === 'function') {
-                    globalPlayer.loadVideoById(ytId);
-                    globalPlayer.playVideo();
-                }
-            } else if (hasMp3) {
-                // fallback para MP3 se não houver YouTube
-                const audio = document.createElement('audio');
-                audio.src = music.mp3Url;
-                audio.controls = true;
-                audio.autoplay = true;
-                audio.style.width = '100%';
-                audio.style.height = '50px';
-                audio.style.background = '#1a1a1a';
-                audio.style.borderRadius = '4px';
-                playerLeft.innerHTML = '';
-                playerLeft.appendChild(audio);
-                currentAudio = audio;
-                activePlaylistType = 'mp3';
-                audio.addEventListener('ended', () => playNext());
+                });
+                globalPlayer.loadVideoById(ytId);
+                globalPlayer.playVideo();
             } else {
-                playerLeft.innerHTML =
-                    `<div style="color:#666;font-size:0.9rem;text-align:center;padding:10px;">Mídia não disponível</div>`;
-                activePlaylistType = null;
+                alert('Erro ao carregar o player do YouTube.');
+                return;
             }
-
-            document.querySelectorAll('.music-card').forEach(c => c.classList.remove('playing-now'));
-            const card = document.getElementById(`card-${musicId}`);
-            if (card) card.classList.add('playing-now');
-
-            updatePlaylistUI();
         }
+        activePlaylistType = 'video';
+    } else {
+        playerLeft.innerHTML =
+            `<div style="color:#666;font-size:0.9rem;text-align:center;padding:10px;">Mídia não disponível</div>`;
+        activePlaylistType = null;
+    }
+
+    // Destacar card
+    document.querySelectorAll('.music-card').forEach(c => c.classList.remove('playing-now'));
+    const card = document.getElementById(`card-${musicId}`);
+    if (card) card.classList.add('playing-now');
+
+    updatePlaylistUI();
+}
 
         // ============================================================
         // FUNÇÕES DAS PLAYLISTS
