@@ -150,36 +150,17 @@
 // YOUTUBE API READY
 // ============================================================
 function onYouTubeIframeAPIReady() {
-    // Garante que o container exista
+    // Cria o container vazio (será preenchido dinamicamente)
     let container = document.getElementById('youtube-player-container');
     if (!container) {
         container = document.createElement('div');
         container.id = 'youtube-player-container';
         container.style.width = '100%';
         container.style.height = '100%';
-        // O container será inserido dinamicamente quando necessário
+        // Ainda não adiciona ao DOM, será feito na reprodução
     }
-
-    // Cria o player global (mas só se não existir)
-    if (!globalPlayer) {
-        globalPlayer = new YT.Player('youtube-player-container', {
-            height: '100%',
-            width: '100%',
-            playerVars: {
-                origin: window.location.origin,
-                enablejsapi: 1,
-                rel: 0,
-                autoplay: 0
-            },
-            events: {
-                onStateChange: function(event) {
-                    if (event.data === YT.PlayerState.ENDED) {
-                        playNext();
-                    }
-                }
-            }
-        });
-    }
+    // Não criamos o player ainda, será criado sob demanda
+    console.log('YouTube API ready');
 }
 // ============================================================
 // FUNÇÃO PRINCIPAL DE REPRODUÇÃO
@@ -217,17 +198,15 @@ function playMusic(musicId, forceMp3 = false) {
     // SE FOR MP3 (forçado ou fallback)
     // --------------------------------
     if (forceMp3 || (!ytId && hasMp3)) {
-        // Remove o container do YouTube se existir
+        // Remove o container do YouTube e destrói o player
         const ytContainer = document.getElementById('youtube-player-container');
         if (ytContainer) ytContainer.remove();
-
-        // Destroi o globalPlayer para liberar recursos
         if (globalPlayer) {
             try { globalPlayer.destroy(); } catch(e) {}
             globalPlayer = null;
         }
 
-        // Cria o player de áudio
+        // Cria player de áudio
         const audio = document.createElement('audio');
         audio.src = music.mp3Url;
         audio.controls = true;
@@ -250,6 +229,77 @@ function playMusic(musicId, forceMp3 = false) {
         updatePlaylistUI();
         return;
     }
+
+    // --------------------------------
+    // SE FOR VÍDEO (YouTube) - LÓGICA CORRIGIDA
+    // --------------------------------
+    if (ytId) {
+        // 1. Para o áudio (se houver)
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio = null;
+        }
+
+        // 2. Remove TODO o conteúdo do playerLeft
+        playerLeft.innerHTML = '';
+
+        // 3. Cria um novo container para o YouTube
+        const container = document.createElement('div');
+        container.id = 'youtube-player-container';
+        container.style.width = '100%';
+        container.style.height = '100%';
+        playerLeft.appendChild(container);
+
+        // 4. Destroi o player antigo (se existir)
+        if (globalPlayer) {
+            try {
+                globalPlayer.destroy();
+            } catch(e) { /* ignora erro */ }
+            globalPlayer = null;
+        }
+
+        // 5. Cria um novo player com o vídeo específico
+        // Força a recriação usando um novo objeto
+        globalPlayer = new YT.Player('youtube-player-container', {
+            height: '100%',
+            width: '100%',
+            videoId: ytId,
+            playerVars: {
+                origin: window.location.origin,
+                enablejsapi: 1,
+                rel: 0,
+                autoplay: 1,
+                modestbranding: 1
+            },
+            events: {
+                onReady: function(event) {
+                    // Toca o vídeo assim que estiver pronto
+                    event.target.playVideo();
+                },
+                onStateChange: function(event) {
+                    // Quando o vídeo terminar, avança na playlist
+                    if (event.data === YT.PlayerState.ENDED) {
+                        playNext();
+                    }
+                }
+            }
+        });
+
+        activePlaylistType = 'video';
+
+        // Destaca o card
+        document.querySelectorAll('.music-card').forEach(c => c.classList.remove('playing-now'));
+        const card = document.getElementById(`card-${musicId}`);
+        if (card) card.classList.add('playing-now');
+
+        updatePlaylistUI();
+        return;
+    }
+
+    // Caso nenhuma mídia disponível (fallback)
+    playerLeft.innerHTML = `<div style="color:#666;font-size:0.9rem;text-align:center;padding:10px;">Mídia não disponível</div>`;
+    activePlaylistType = null;
+}
 
     // --------------------------------
     // SE FOR VÍDEO (YouTube)
