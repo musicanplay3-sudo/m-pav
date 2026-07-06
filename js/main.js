@@ -150,42 +150,36 @@
 // YOUTUBE API READY
 // ============================================================
 function onYouTubeIframeAPIReady() {
-    // Cria o container fixo para o YouTube
+    // Garante que o container exista
     let container = document.getElementById('youtube-player-container');
     if (!container) {
         container = document.createElement('div');
         container.id = 'youtube-player-container';
         container.style.width = '100%';
         container.style.height = '100%';
-        playerLeft.appendChild(container);
+        // O container será inserido dinamicamente quando necessário
     }
 
-    // Se o globalPlayer já existir, destrua-o antes de recriar
-    if (globalPlayer) {
-        globalPlayer.destroy();
-        globalPlayer = null;
-    }
-
-    globalPlayer = new YT.Player('youtube-player-container', {
-        height: '100%',
-        width: '100%',
-        playerVars: {
-            origin: window.location.origin,
-            enablejsapi: 1,
-            rel: 0,
-            autoplay: 0 // não inicia automaticamente
-        },
-        events: {
-            onReady: function() {
-                console.log('YouTube Player pronto');
+    // Cria o player global (mas só se não existir)
+    if (!globalPlayer) {
+        globalPlayer = new YT.Player('youtube-player-container', {
+            height: '100%',
+            width: '100%',
+            playerVars: {
+                origin: window.location.origin,
+                enablejsapi: 1,
+                rel: 0,
+                autoplay: 0
             },
-            onStateChange: function(event) {
-                if (event.data === YT.PlayerState.ENDED) {
-                    playNext();
+            events: {
+                onStateChange: function(event) {
+                    if (event.data === YT.PlayerState.ENDED) {
+                        playNext();
+                    }
                 }
             }
-        }
-    });
+        });
+    }
 }
 // ============================================================
 // FUNÇÃO PRINCIPAL DE REPRODUÇÃO
@@ -212,19 +206,28 @@ function playMusic(musicId, forceMp3 = false) {
     currentPlayingTitle.textContent = music.title;
     currentPlayingMeta.textContent = `${music.composer} | ${music.book}`;
 
-    // --- LIMPEZA COMPLETA DO PLAYER ANTERIOR ---
-    // Para o áudio (se existir)
+    // --- LIMPEZA DO PLAYER ANTERIOR ---
+    // Para áudio (MP3) se estiver tocando
     if (currentAudio) {
         currentAudio.pause();
         currentAudio = null;
     }
 
-    // Remove todos os elementos filhos do playerLeft
-    playerLeft.innerHTML = '';
-
-    // Se forçar MP3 ou não houver YouTube, usa áudio
+    // --------------------------------
+    // SE FOR MP3 (forçado ou fallback)
+    // --------------------------------
     if (forceMp3 || (!ytId && hasMp3)) {
-        // Cria player de áudio
+        // Remove o container do YouTube se existir
+        const ytContainer = document.getElementById('youtube-player-container');
+        if (ytContainer) ytContainer.remove();
+
+        // Destroi o globalPlayer para liberar recursos
+        if (globalPlayer) {
+            try { globalPlayer.destroy(); } catch(e) {}
+            globalPlayer = null;
+        }
+
+        // Cria o player de áudio
         const audio = document.createElement('audio');
         audio.src = music.mp3Url;
         audio.controls = true;
@@ -233,12 +236,14 @@ function playMusic(musicId, forceMp3 = false) {
         audio.style.height = '50px';
         audio.style.background = '#1a1a1a';
         audio.style.borderRadius = '4px';
+        
+        playerLeft.innerHTML = '';
         playerLeft.appendChild(audio);
         currentAudio = audio;
         activePlaylistType = 'mp3';
         audio.addEventListener('ended', () => playNext());
 
-        // Atualiza UI
+        // Destaca o card e atualiza UI
         document.querySelectorAll('.music-card').forEach(c => c.classList.remove('playing-now'));
         const card = document.getElementById(`card-${musicId}`);
         if (card) card.classList.add('playing-now');
@@ -246,55 +251,72 @@ function playMusic(musicId, forceMp3 = false) {
         return;
     }
 
-    // --- VÍDEO (YouTube) ---
-    // Recria o container do YouTube
-    const container = document.createElement('div');
-    container.id = 'youtube-player-container';
-    container.style.width = '100%';
-    container.style.height = '100%';
-    playerLeft.appendChild(container);
+    // --------------------------------
+    // SE FOR VÍDEO (YouTube)
+    // --------------------------------
+    if (ytId) {
+        // 1. Para o áudio (se houver)
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio = null;
+        }
 
-    // Destroi o player antigo se existir
-    if (globalPlayer) {
-        try {
-            globalPlayer.destroy();
-        } catch (e) { /* ignore */ }
-        globalPlayer = null;
-    }
+        // 2. Remove qualquer elemento residual do playerLeft
+        playerLeft.innerHTML = '';
 
-    // Cria um novo player com o ID do vídeo
-    globalPlayer = new YT.Player('youtube-player-container', {
-        height: '100%',
-        width: '100%',
-        videoId: ytId,
-        playerVars: {
-            origin: window.location.origin,
-            enablejsapi: 1,
-            rel: 0,
-            autoplay: 1 // toca automaticamente
-        },
-        events: {
-            onReady: function(event) {
-                event.target.playVideo();
+        // 3. Recria o container do YouTube
+        const container = document.createElement('div');
+        container.id = 'youtube-player-container';
+        container.style.width = '100%';
+        container.style.height = '100%';
+        playerLeft.appendChild(container);
+
+        // 4. Destroi o player antigo (se existir)
+        if (globalPlayer) {
+            try {
+                globalPlayer.destroy();
+            } catch(e) {}
+            globalPlayer = null;
+        }
+
+        // 5. Cria um novo player com o vídeo específico
+        globalPlayer = new YT.Player('youtube-player-container', {
+            height: '100%',
+            width: '100%',
+            videoId: ytId,
+            playerVars: {
+                origin: window.location.origin,
+                enablejsapi: 1,
+                rel: 0,
+                autoplay: 1
             },
-            onStateChange: function(event) {
-                if (event.data === YT.PlayerState.ENDED) {
-                    playNext();
+            events: {
+                onReady: function(event) {
+                    event.target.playVideo();
+                },
+                onStateChange: function(event) {
+                    if (event.data === YT.PlayerState.ENDED) {
+                        playNext();
+                    }
                 }
             }
-        }
-    });
+        });
 
-    activePlaylistType = 'video';
+        activePlaylistType = 'video';
 
-    // Destaca o card
-    document.querySelectorAll('.music-card').forEach(c => c.classList.remove('playing-now'));
-    const card = document.getElementById(`card-${musicId}`);
-    if (card) card.classList.add('playing-now');
+        // Destaca o card
+        document.querySelectorAll('.music-card').forEach(c => c.classList.remove('playing-now'));
+        const card = document.getElementById(`card-${musicId}`);
+        if (card) card.classList.add('playing-now');
 
-    updatePlaylistUI();
+        updatePlaylistUI();
+        return;
+    }
+
+    // Caso nenhuma mídia disponível (fallback)
+    playerLeft.innerHTML = `<div style="color:#666;font-size:0.9rem;text-align:center;padding:10px;">Mídia não disponível</div>`;
+    activePlaylistType = null;
 }
-
         // ============================================================
         // FUNÇÕES DAS PLAYLISTS
         // ============================================================
