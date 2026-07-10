@@ -161,30 +161,28 @@ function togglePlaylist(type) {
 }
 
 // ============================================================
-// MAPEAMENTO AUTOMÁTICO DINÂMICO DO GITHUB
+// MAPEAMENTO AUTOMÁTICO DINÂMICO E SEGURO DO GITHUB
 // ============================================================
 async function escanearAudiosGithub() {
-    try {
-        const resposta = await fetch(LINK_DA_PASTA_MP3);
-        const html = await resposta.text();
-        
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        const links = doc.querySelectorAll('a');
-        
-        arquivosDisponiveisNoGithub = [];
-        links.forEach(link => {
-            const href = link.getAttribute('href');
-            if (href && href.endsWith('.mp3')) {
-                // Remove a extensão .mp3 para obter o id correspondente do banco
-                const idMusica = href.replace('.mp3', '');
-                arquivosDisponiveisNoGithub.push(parseInt(idMusica, 10));
-            }
-        });
-        console.log("Áudios identificados no GitHub (IDs):", arquivosDisponiveisNoGithub);
-    } catch (e) {
-        console.warn("Não foi possível listar o diretório do GitHub diretamente. Usando mapeamento sob demanda.");
-    }
+    if (typeof musicDatabase === 'undefined' || !LINK_DA_PASTA_MP3) return;
+
+    // Varre em paralelo a presença física dos arquivos no servidor usando requisições leves do tipo HEAD
+    const checagens = musicDatabase.map(async (music) => {
+        if (music.mp3Url && music.mp3Url.trim() !== '') {
+            return { id: music.id, existe: true };
+        }
+        const urlDoAudio = `${LINK_DA_PASTA_MP3}${music.id}.mp3`;
+        try {
+            const resposta = await fetch(urlDoAudio, { method: 'HEAD' });
+            return { id: music.id, existe: resposta.ok };
+        } catch (error) {
+            return { id: music.id, existe: false };
+        }
+    });
+
+    const resultados = await Promise.all(checagens);
+    arquivosDisponiveisNoGithub = resultados.filter(r => r.existe).map(r => r.id);
+    console.log("Áudios validados no GitHub (IDs ativos):", arquivosDisponiveisNoGithub);
 }
 
 // ============================================================
@@ -196,12 +194,8 @@ function playMusic(musicId, forceMp3 = false) {
     if (!music) return;
 
     const ytId = localGetYouTubeId(music.youtubeUrl);
-    
-    // Define a URL do MP3 dinamicamente baseada na pasta raiz do seu GitHub Pages + ID da música
     const urlMp3Github = `${LINK_DA_PASTA_MP3}${music.id}.mp3`;
-    
-    // Verifica se o MP3 está disponível (seja no banco ou escaneado no repositório)
-    const hasMp3 = (music.mp3Url && music.mp3Url.trim() !== '') || arquivosDisponiveisNoGithub.includes(music.id) || forceMp3;
+    const hasMp3 = (music.mp3Url && music.mp3Url.trim() !== '') || arquivosDisponiveisNoGithub.includes(music.id);
 
     if (forceMp3 && !hasMp3) {
         alert('MP3 não disponível para esta música no GitHub.');
@@ -225,7 +219,6 @@ function playMusic(musicId, forceMp3 = false) {
     // ===== MP3 =====
     if (forceMp3 || (!ytId && hasMp3)) {
         const audio = document.createElement('audio');
-        // Usa a URL do Github vinculada ao ID como prioridade
         audio.src = (music.mp3Url && music.mp3Url.trim() !== '') ? music.mp3Url : urlMp3Github;
         audio.controls = true;
         audio.autoplay = true;
@@ -243,7 +236,6 @@ function playMusic(musicId, forceMp3 = false) {
     else if (ytId && !forceMp3) {
         const iframe = document.createElement('iframe');
         iframe.id = 'youtube-player-' + musicId;
-        // Removido o enablejsapi=1 para bloquear disparos de postMessage locais impeditivos
         iframe.src = `https://www.youtube.com/embed/${ytId}?autoplay=1&rel=0`;
         iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
         iframe.allowFullscreen = true;
@@ -280,7 +272,7 @@ function addToVideoPlaylist(musicId) {
 }
 
 function addToMp3Playlist(musicId) {
-    if (!videoPlaylist.includes(musicId)) {
+    if (!mp3Playlist.includes(musicId)) {
         mp3Playlist.push(musicId);
         updatePlaylistUI();
         feedbackButton(musicId, 'btn-add-mp3', '✅');
@@ -300,7 +292,6 @@ function feedbackButton(musicId, className, text) {
     }
 }
 
-// [Mantidas as funções auxiliares de playlist: removeFromPlaylist, clearPlaylist, playVideoPlaylistItem, playMp3PlaylistItem, playNext, playPrevious, savePlaylist, loadPlaylists, exportPlaylist sem alterações de lógica para não quebrar sua estrutura]
 function removeFromPlaylist(type, index) {
     if (type === 'video') {
         videoPlaylist.splice(index, 1);
@@ -398,6 +389,7 @@ function playMp3PlaylistItem(index) {
     }
 }
 
+// [playNext e playPrevious contendo a inteligência de loop mantidas]
 function playNext() {
     if (activePlaylistType === 'video') {
         if (activeVideoIndex + 1 < videoPlaylist.length) {
@@ -450,12 +442,6 @@ function exportPlaylist(type) {
 }
 
 // ============================================================
-// RENDERIZAÇÃO DO CATÁLOGO (INTEGRADO COM GITHUB AUDIO)
-// ============================================================
-// ============================================================
-// RENDERIZAÇÃO DO CATÁLOGO (CORRIGIDA PARA EXECUÇÃO LOCAL FILE://)
-// ============================================================
-// ============================================================
 // RENDERIZAÇÃO DO CATÁLOGO (DEFINIÇÃO PRECISA DE ÁUDIO)
 // ============================================================
 function renderCatalog() {
@@ -491,7 +477,7 @@ function renderCatalog() {
         const hasPdf = music.pdfUrl && music.pdfUrl.trim() !== '';
         const hasVideo = localGetYouTubeId(music.youtubeUrl) !== null;
         
-        // NOVA LÓGICA: O áudio existe se tiver link direto OU se tiver a propriedade temMp3 como true
+        // INTELEGÊNCIA AUTOMÁTICA: O fone só acende se houver link manual OU se a varredura HEAD achou o ID no GitHub!
         const hasMp3 = (music.mp3Url && music.mp3Url.trim() !== '') || (music.temMp3 === true) || arquivosDisponiveisNoGithub.includes(music.id);
 
         const pdfBtn = `<button class="btn-view-pdf ${hasPdf ? '' : 'disabled'}" 
@@ -527,27 +513,6 @@ function renderCatalog() {
         if (catalogGrid) catalogGrid.appendChild(card);
     });
 }
-
-// ============================================================
-// INICIALIZAÇÃO CORRIGIDA (SEM TRAVAR NO ERRO 404)
-// ============================================================
-window.addEventListener('DOMContentLoaded', async () => {
-    initFilters();
-    loadPlaylists();
-    
-    // Tenta escanear, se falhar por segurança local, o catálogo abre do mesmo jeito
-    await escanearAudiosGithub();
-    
-    renderCatalog();
-    
-    const videoItems = document.getElementById('videoPlaylistItems');
-    const mp3Items = document.getElementById('mp3PlaylistItems');
-    if (videoItems) videoItems.classList.remove('hidden');
-    if (mp3Items) mp3Items.classList.remove('hidden');
-    
-    videoListVisible = true;
-    mp3ListVisible = true;
-});
 
 // ============================================================
 // RESIZERS
