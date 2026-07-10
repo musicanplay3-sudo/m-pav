@@ -455,6 +455,9 @@ function exportPlaylist(type) {
 // ============================================================
 // RENDERIZAÇÃO DO CATÁLOGO (CORRIGIDA PARA EXECUÇÃO LOCAL FILE://)
 // ============================================================
+// ============================================================
+// RENDERIZAÇÃO DO CATÁLOGO (DEFINIÇÃO PRECISA DE ÁUDIO)
+// ============================================================
 function renderCatalog() {
     if (typeof musicDatabase === 'undefined') return;
     const query = searchGeneral ? searchGeneral.value.toLowerCase() : '';
@@ -488,8 +491,8 @@ function renderCatalog() {
         const hasPdf = music.pdfUrl && music.pdfUrl.trim() !== '';
         const hasVideo = localGetYouTubeId(music.youtubeUrl) !== null;
         
-        // CORREÇÃO: Força o botão de MP3 a ficar ativo se houver link no banco OU se você configurou o link do GitHub
-        const hasMp3 = (music.mp3Url && music.mp3Url.trim() !== '') || (LINK_DA_PASTA_MP3 && LINK_DA_PASTA_MP3.trim() !== '');
+        // NOVA LÓGICA: O áudio existe se tiver link direto OU se tiver a propriedade temMp3 como true
+        const hasMp3 = (music.mp3Url && music.mp3Url.trim() !== '') || (music.temMp3 === true) || arquivosDisponiveisNoGithub.includes(music.id);
 
         const pdfBtn = `<button class="btn-view-pdf ${hasPdf ? '' : 'disabled'}" 
                             onclick="${hasPdf ? `openPdfPreview('${safeTitle}','${music.pdfUrl}')` : ''}">📄</button>`;
@@ -500,7 +503,7 @@ function renderCatalog() {
         const playVideoBtn = `<button class="btn-play-video ${hasVideo ? '' : 'disabled'}" 
                                  onclick="${hasVideo ? `playMusic(${music.id}, false)` : ''}">▶️</button>`;
         const playMp3Btn = `<button class="btn-play-mp3 ${hasMp3 ? '' : 'disabled'}" 
-                                onclick="${hasMusicMp3Check(music) ? `playMusic(${music.id}, true)` : `playMusic(${music.id}, true)`}">🎧</button>`;
+                                onclick="${hasMp3 ? `playMusic(${music.id}, true)` : ''}">🎧</button>`;
 
         card.innerHTML = `
             <div class="music-info">
@@ -523,11 +526,6 @@ function renderCatalog() {
         `;
         if (catalogGrid) catalogGrid.appendChild(card);
     });
-}
-
-// Função auxiliar para evitar travamento de renderização local
-function hasMusicMp3Check(music) {
-    return (music.mp3Url && music.mp3Url.trim() !== '') || arquivosDisponiveisNoGithub.includes(music.id);
 }
 
 // ============================================================
