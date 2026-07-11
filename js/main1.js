@@ -6,6 +6,9 @@ const LINK_DA_PASTA_MP3 = "https://albertinosesc.github.io/audionbm/";
 // Variável global para rastrear quais IDs de áudio realmente existem no GitHub
 let arquivosDisponiveisNoGithub = [];
 
+// Guarda o link do PDF atualmente aberto para os botões de alternância saberem o que renderizar
+let currentActivePdfUrl = "";
+
 // ============================================================
 // FUNÇÃO AUXILIAR
 // ============================================================
@@ -39,8 +42,25 @@ const currentPlayingTitle = document.getElementById('currentPlayingTitle');
 const currentPlayingMeta = document.getElementById('currentPlayingMeta');
 const playerLeft = document.getElementById('playerLeft');
 
-// Segundo visualizador de PDF (Gerado dinamicamente caso não exista no HTML)
+// Segundo visualizador de PDF (Gerado dinamicamente)
 let pdfIframe2 = document.getElementById('pdfIframe2');
+
+// Elementos de controle dinâmicos das páginas que vamos injetar/gerenciar
+let btnView1Page = null;
+let btnView2Pages = null;
+let btnFullscreen = null;
+
+// ============================================================
+// TOGGLE SIDEBAR
+// ============================================================
+if (btnToggleSidebar && sidebar) {
+    btnToggleSidebar.addEventListener('click', () => {
+        sidebar.classList.toggle('collapsed');
+        if (resizerLeft) {
+            resizerLeft.style.display = sidebar.classList.contains('collapsed') ? 'none' : 'flex';
+        }
+    });
+}
 
 // ============================================================
 // VARIÁVEIS DE ESTADO
@@ -59,18 +79,6 @@ let activePlaylistType = null; // 'video' ou 'mp3'
 // Estado dos toggles das playlists (visível por padrão)
 let videoListVisible = true;
 let mp3ListVisible = true;
-
-// ============================================================
-// TOGGLE SIDEBAR
-// ============================================================
-if (btnToggleSidebar && sidebar) {
-    btnToggleSidebar.addEventListener('click', () => {
-        sidebar.classList.toggle('collapsed');
-        if (resizerLeft) {
-            resizerLeft.style.display = sidebar.classList.contains('collapsed') ? 'none' : 'flex';
-        }
-    });
-}
 
 // ============================================================
 // FILTROS
@@ -109,7 +117,111 @@ function getViewMode() {
 }
 
 // ============================================================
-// PDF (ABRE ARQUIVO ÚNICO LADO A LADO: PÁGINA 1 E PÁGINA 2)
+// CRIAÇÃO E GERENCIAMENTO DOS BOTÕES DE VISUALIZAÇÃO DO PDF
+// ============================================================
+function injectPdfControlButtons() {
+    const header = document.querySelector('.preview-header');
+    if (!header || document.getElementById('pdfCustomControls')) return;
+
+    const controlWrapper = document.createElement('div');
+    controlWrapper.id = 'pdfCustomControls';
+    controlWrapper.style.display = 'flex';
+    controlWrapper.style.gap = '8px';
+    controlWrapper.style.alignItems = 'center';
+    controlWrapper.style.marginRight = '15px';
+
+    controlWrapper.innerHTML = `
+        <button id="btnView1Page" style="padding: 4px 8px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: 1px solid #555; background: #222; color: #fff;">📄 1 Pág</button>
+        <button id="btnView2Pages" style="padding: 4px 8px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: 1px solid #555; background: #3498db; color: #fff;">📖 2 Págs</button>
+        <button id="btnFullscreen" style="padding: 4px 8px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: 1px solid #555; background: #27ae60; color: #fff;">🖵 Tela Cheia</button>
+    `;
+
+    // Insere os botões logo antes do botão de fechar original
+    header.insertBefore(controlWrapper, btnClosePreview);
+
+    btnView1Page = document.getElementById('btnView1Page');
+    btnView2Pages = document.getElementById('btnView2Pages');
+    btnFullscreen = document.getElementById('btnFullscreen');
+
+    btnView1Page.addEventListener('click', () => setPdfLayout(1));
+    btnView2Pages.addEventListener('click', () => setPdfLayout(2));
+    btnFullscreen.addEventListener('click', togglePdfFullscreen);
+}
+
+function setPdfLayout(pagesCount) {
+    if (!currentActivePdfUrl) return;
+    const iframeContainer = pdfIframe ? pdfIframe.parentElement : null;
+
+    if (pagesCount === 1) {
+        // Estilização para 1 Página Inteira
+        if (iframeContainer) {
+            iframeContainer.style.display = 'block';
+        }
+        if (pdfIframe) {
+            pdfIframe.src = `${currentActivePdfUrl}#page=1&view=FitH`;
+            pdfIframe.style.width = '100%';
+        }
+        if (pdfIframe2) {
+            pdfIframe2.src = '';
+            pdfIframe2.style.display = 'none';
+        }
+        if (btnView1Page) btnView1Page.style.background = '#3498db';
+        if (btnView2Pages) btnView2Pages.style.background = '#222';
+
+    } else if (pagesCount === 2) {
+        // Estilização para 2 Páginas lado a lado
+        if (iframeContainer) {
+            iframeContainer.style.display = 'flex';
+            iframeContainer.style.flexDirection = 'row';
+            iframeContainer.style.gap = '10px';
+        }
+        if (pdfIframe) {
+            pdfIframe.src = `${currentActivePdfUrl}#page=1&view=FitH`;
+            pdfIframe.style.width = '50%';
+        }
+        if (!pdfIframe2) {
+            pdfIframe2 = document.createElement('iframe');
+            pdfIframe2.id = 'pdfIframe2';
+            pdfIframe2.style.border = '0';
+            pdfIframe2.style.height = '100%';
+            if (iframeContainer) iframeContainer.appendChild(pdfIframe2);
+        }
+        pdfIframe2.src = `${currentActivePdfUrl}#page=2&view=FitH`;
+        pdfIframe2.style.width = '50%';
+        pdfIframe2.style.display = 'block';
+
+        if (btnView1Page) btnView1Page.style.background = '#222';
+        if (btnView2Pages) btnView2Pages.style.background = '#3498db';
+    }
+}
+
+function togglePdfFullscreen() {
+    if (!pdfPreviewPanel) return;
+
+    // Se já estiver em modo tela cheia nativo do navegador, sai dele
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+        if (btnFullscreen) btnFullscreen.innerHTML = "🖵 Tela Cheia";
+    } else {
+        // Senão, força o painel da partitura a ocupar a tela inteira da máquina
+        pdfPreviewPanel.requestFullscreen().then(() => {
+            if (btnFullscreen) btnFullscreen.innerHTML = "❌ Sair Fila";
+        }).catch(err => {
+            // Fallback caso o navegador bloqueie o fullscreen nativo
+            alert("Não foi possível ativar tela cheia: " + err.message);
+        });
+    }
+}
+
+// Monitora se o usuário apertou 'ESC' para sair da tela cheia e atualiza o texto do botão
+document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement && btnFullscreen) {
+        btnFullscreen.innerHTML = "🖵 Tela Cheia";
+    }
+});
+
+// ============================================================
+// PDF (ABRIR PREVIEW INICIAL)
 // ============================================================
 function openPdfPreview(title, urlString) {
     if (!urlString || urlString.trim() === '') {
@@ -119,53 +231,33 @@ function openPdfPreview(title, urlString) {
 
     if (pdfPreviewTitle) pdfPreviewTitle.textContent = `Partitura: ${title}`;
     
-    // Garante que o caminho do arquivo comece correto para evitar o 404 do GitHub Pages
     let urlFinal = urlString.trim();
     if (!urlFinal.startsWith('http') && !urlFinal.startsWith('/')) {
         urlFinal = './' + urlFinal;
     }
 
-    const iframeContainer = pdfIframe ? pdfIframe.parentElement : null;
+    // Salva globalmente o arquivo ativo
+    currentActivePdfUrl = urlFinal;
 
-    // Configura o container para colocar os dois visualizadores lado a lado (row)
-    if (iframeContainer) {
-        iframeContainer.style.display = 'flex';
-        iframeContainer.style.flexDirection = 'row';
-        iframeContainer.style.gap = '10px';
-        iframeContainer.style.width = '100%';
-        iframeContainer.style.height = '100%';
-    }
+    // Injeta os botões de controle de tela se eles ainda não existirem
+    injectPdfControlButtons();
 
-    // Primeiro visualizador (Lado Esquerdo): Abre o PDF forçando a Página 1
-    if (pdfIframe) {
-        pdfIframe.src = `${urlFinal}#page=1&view=FitH`;
-        pdfIframe.style.width = '50%';
-        pdfIframe.style.display = 'block';
-    }
-
-    // Cria ou configura o Segundo visualizador (Lado Direito) caso não exista no HTML
-    if (!pdfIframe2) {
-        pdfIframe2 = document.createElement('iframe');
-        pdfIframe2.id = 'pdfIframe2';
-        pdfIframe2.style.border = '0';
-        pdfIframe2.style.height = '100%';
-        if (iframeContainer) iframeContainer.appendChild(pdfIframe2);
-    }
-    
-    // Segundo visualizador (Lado Direito): Abre o MESMO PDF forçando a Página 2
-    pdfIframe2.src = `${urlFinal}#page=2&view=FitH`;
-    pdfIframe2.style.width = '50%';
-    pdfIframe2.style.display = 'block';
+    // Por padrão, abre no modo 2 páginas lado a lado (que você mais usa)
+    setPdfLayout(2);
 
     if (pdfPreviewPanel) pdfPreviewPanel.style.display = 'flex';
     if (resizerRight) resizerRight.style.display = 'flex';
 }
 
 function closePdfPreview() {
+    if (document.fullscreenElement) {
+        document.exitFullscreen();
+    }
     if (pdfPreviewPanel) pdfPreviewPanel.style.display = 'none';
     if (resizerRight) resizerRight.style.display = 'none';
     if (pdfIframe) pdfIframe.src = '';
     if (pdfIframe2) pdfIframe2.src = '';
+    currentActivePdfUrl = "";
 }
 
 // ============================================================
@@ -309,6 +401,7 @@ function addToVideoPlaylist(musicId) {
     }
 }
 
+// O restante das funções de utilidades das playlists permanecem inalteradas
 function addToMp3Playlist(musicId) {
     if (!mp3Playlist.includes(musicId)) {
         mp3Playlist.push(musicId);
