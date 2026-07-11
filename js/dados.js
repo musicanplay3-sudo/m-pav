@@ -24,7 +24,7 @@ const musicDatabase = [
 { id: 23979, title: "23979 - William Tell Overture", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23979.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 23980, title: "23980 - Windsong", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23980.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 23981, title: "23981 - Winter Celebration", composer: "James Bastien", book: "7029 - PDF", pdfUrl: "partituras/23981.pdf", youtubeUrl: "", mp3Url: "" },
-{ id: 23982, title: "23982 - Down in the Valley", composer: "American Folk Song", book: "612 - PDF", pdfUrl: "partituras/23982.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 23982, title: "23982 - Down in the Valley", composer: "American Folk Song", book: "612 - PDF", pdfUrl: "partituras/23982-1.pdf, partituras/23982-2.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 23983, title: "23983 - Tumbalalaika", composer: "Tradicional", book: "612 - PDF", pdfUrl: "partituras/23983.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 23984, title: "23984 - Light and Blue", composer: "Willard A. Palmer", book: "612 - PDF", pdfUrl: "partituras/23984.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 23985, title: "23985 - Roman Holiday", composer: "", book: "612 - PDF", pdfUrl: "partituras/23985.pdf", youtubeUrl: "", mp3Url: "" },
