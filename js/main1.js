@@ -22,7 +22,7 @@ function localGetYouTubeId(url) {
 }
 
 // ============================================================
-// ELEMENTOS DOM
+// ELEMENTOS DOM (Ajustados conforme o seu HTML real)
 // ============================================================
 const searchGeneral = document.getElementById('searchGeneral');
 const filterComposer = document.getElementById('filterComposer');
@@ -42,10 +42,10 @@ const currentPlayingTitle = document.getElementById('currentPlayingTitle');
 const currentPlayingMeta = document.getElementById('currentPlayingMeta');
 const playerLeft = document.getElementById('playerLeft');
 
-// Segundo visualizador de PDF (Gerado dinamicamente)
+// Segundo visualizador de PDF (Gerado dinamicamente caso não exista)
 let pdfIframe2 = document.getElementById('pdfIframe2');
 
-// Elementos de controle dinâmicos das páginas que vamos injetar/gerenciar
+// Elementos de controle dinâmicos das páginas
 let btnView1Page = null;
 let btnView2Pages = null;
 let btnFullscreen = null;
@@ -120,7 +120,8 @@ function getViewMode() {
 // CRIAÇÃO E GERENCIAMENTO DOS BOTÕES DE VISUALIZAÇÃO DO PDF
 // ============================================================
 function injectPdfControlButtons() {
-    const header = document.querySelector('.preview-header');
+    // Alvo corrigido para bater exatamente com a classe do seu HTML: .pdf-preview-header
+    const header = document.querySelector('.pdf-preview-header');
     if (!header || document.getElementById('pdfCustomControls')) return;
 
     const controlWrapper = document.createElement('div');
@@ -131,12 +132,12 @@ function injectPdfControlButtons() {
     controlWrapper.style.marginRight = '15px';
 
     controlWrapper.innerHTML = `
-        <button id="btnView1Page" style="padding: 4px 8px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: 1px solid #555; background: #222; color: #fff;">📄 1 Pág</button>
-        <button id="btnView2Pages" style="padding: 4px 8px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: 1px solid #555; background: #3498db; color: #fff;">📖 2 Págs</button>
-        <button id="btnFullscreen" style="padding: 4px 8px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: 1px solid #555; background: #27ae60; color: #fff;">🖵 Tela Cheia</button>
+        <button id="btnView1Page" style="padding: 5px 10px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: 1px solid #555; background: #222; color: #fff; font-weight: bold;">📄 1 Pág</button>
+        <button id="btnView2Pages" style="padding: 5px 10px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: 1px solid #555; background: #3498db; color: #fff; font-weight: bold;">📖 2 Págs</button>
+        <button id="btnFullscreen" style="padding: 5px 10px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: 1px solid #555; background: #27ae60; color: #fff; font-weight: bold;">🖵 Tela Cheia</button>
     `;
 
-    // Insere os botões logo antes do botão de fechar original
+    // Coloca os botões antes do botão de fechar (btnClosePreview)
     header.insertBefore(controlWrapper, btnClosePreview);
 
     btnView1Page = document.getElementById('btnView1Page');
@@ -150,16 +151,15 @@ function injectPdfControlButtons() {
 
 function setPdfLayout(pagesCount) {
     if (!currentActivePdfUrl) return;
-    const iframeContainer = pdfIframe ? pdfIframe.parentElement : null;
+    
+    // Pegamos a tag <section class="pdf-preview-panel"> como container estrutural
+    const iframeContainer = pdfPreviewPanel;
 
     if (pagesCount === 1) {
-        // Estilização para 1 Página Inteira
-        if (iframeContainer) {
-            iframeContainer.style.display = 'block';
-        }
         if (pdfIframe) {
             pdfIframe.src = `${currentActivePdfUrl}#page=1&view=FitH`;
             pdfIframe.style.width = '100%';
+            pdfIframe.style.height = 'calc(100% - 50px)';
         }
         if (pdfIframe2) {
             pdfIframe2.src = '';
@@ -169,25 +169,25 @@ function setPdfLayout(pagesCount) {
         if (btnView2Pages) btnView2Pages.style.background = '#222';
 
     } else if (pagesCount === 2) {
-        // Estilização para 2 Páginas lado a lado
-        if (iframeContainer) {
-            iframeContainer.style.display = 'flex';
-            iframeContainer.style.flexDirection = 'row';
-            iframeContainer.style.gap = '10px';
-        }
         if (pdfIframe) {
             pdfIframe.src = `${currentActivePdfUrl}#page=1&view=FitH`;
             pdfIframe.style.width = '50%';
+            pdfIframe.style.height = 'calc(100% - 50px)';
+            pdfIframe.style.float = 'left';
         }
+        
         if (!pdfIframe2) {
             pdfIframe2 = document.createElement('iframe');
             pdfIframe2.id = 'pdfIframe2';
+            pdfIframe2.className = 'pdf-frame';
             pdfIframe2.style.border = '0';
-            pdfIframe2.style.height = '100%';
+            pdfIframe2.style.height = 'calc(100% - 50px)';
             if (iframeContainer) iframeContainer.appendChild(pdfIframe2);
         }
+        
         pdfIframe2.src = `${currentActivePdfUrl}#page=2&view=FitH`;
         pdfIframe2.style.width = '50%';
+        pdfIframe2.style.float = 'right';
         pdfIframe2.style.display = 'block';
 
         if (btnView1Page) btnView1Page.style.background = '#222';
@@ -198,22 +198,18 @@ function setPdfLayout(pagesCount) {
 function togglePdfFullscreen() {
     if (!pdfPreviewPanel) return;
 
-    // Se já estiver em modo tela cheia nativo do navegador, sai dele
     if (document.fullscreenElement) {
         document.exitFullscreen();
         if (btnFullscreen) btnFullscreen.innerHTML = "🖵 Tela Cheia";
     } else {
-        // Senão, força o painel da partitura a ocupar a tela inteira da máquina
         pdfPreviewPanel.requestFullscreen().then(() => {
             if (btnFullscreen) btnFullscreen.innerHTML = "❌ Sair Fila";
         }).catch(err => {
-            // Fallback caso o navegador bloqueie o fullscreen nativo
-            alert("Não foi possível ativar tela cheia: " + err.message);
+            alert("Não foi possível ativar a tela cheia: " + err.message);
         });
     }
 }
 
-// Monitora se o usuário apertou 'ESC' para sair da tela cheia e atualiza o texto do botão
 document.addEventListener('fullscreenchange', () => {
     if (!document.fullscreenElement && btnFullscreen) {
         btnFullscreen.innerHTML = "🖵 Tela Cheia";
@@ -236,17 +232,13 @@ function openPdfPreview(title, urlString) {
         urlFinal = './' + urlFinal;
     }
 
-    // Salva globalmente o arquivo ativo
     currentActivePdfUrl = urlFinal;
 
-    // Injeta os botões de controle de tela se eles ainda não existirem
-    injectPdfControlButtons();
-
-    // Por padrão, abre no modo 2 páginas lado a lado (que você mais usa)
-    setPdfLayout(2);
-
-    if (pdfPreviewPanel) pdfPreviewPanel.style.display = 'flex';
+    if (pdfPreviewPanel) pdfPreviewPanel.style.display = 'block';
     if (resizerRight) resizerRight.style.display = 'flex';
+
+    injectPdfControlButtons();
+    setPdfLayout(2); // Começa em 2 páginas lado a lado
 }
 
 function closePdfPreview() {
@@ -401,7 +393,6 @@ function addToVideoPlaylist(musicId) {
     }
 }
 
-// O restante das funções de utilidades das playlists permanecem inalteradas
 function addToMp3Playlist(musicId) {
     if (!mp3Playlist.includes(musicId)) {
         mp3Playlist.push(musicId);
@@ -444,6 +435,15 @@ function clearPlaylist(type) {
         if (mp3Playlist.length === 0) return;
         if (confirm('Limpar fila de MP3?')) { mp3Playlist = []; activeMp3Index = -1; updatePlaylistUI(); }
     }
+}
+
+function exportPlaylist(type) {
+    const lista = type === 'video' ? videoPlaylist : mp3Playlist;
+    if(lista.length === 0) {
+        alert('A fila está vazia para exportação.');
+        return;
+    }
+    alert('Fila pronta para exportação: ' + JSON.stringify(lista));
 }
 
 function updatePlaylistUI() {
