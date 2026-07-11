@@ -113,7 +113,10 @@ function getViewMode() {
 // ============================================================
 // PDF (ABRE O MESMO ARQUIVO NAS PÁGINAS 1 E 2 LADO A LADO)
 // ============================================================
-function openPdfPreview(title, urlString, paginas) {
+// ============================================================
+// PDF (ATUALIZADO PARA DUAS PÁGINAS EM ARQUIVOS SEPARADOS)
+// ============================================================
+function openPdfPreview(title, urlString) {
     if (!urlString || urlString.trim() === '') {
         alert('Partitura não disponível para esta música.');
         return;
@@ -121,10 +124,13 @@ function openPdfPreview(title, urlString, paginas) {
 
     if (pdfPreviewTitle) pdfPreviewTitle.textContent = `Partitura: ${title}`;
     
+    // Divide os links caso haja uma vírgula (ex: "partituras/23982-1.pdf, partituras/23982-2.pdf")
+    const urls = urlString.split(',').map(u => u.trim());
+
     const iframeContainer = pdfIframe ? pdfIframe.parentElement : null;
 
-    // Se o banco indicar que a música tem 2 páginas (ou se você usar a lógica de detecção)
-    if (paginas === 2) {
+    // Se o JS encontrar dois links separados por vírgula no banco
+    if (urls.length >= 2) {
         if (iframeContainer) {
             iframeContainer.style.display = 'flex';
             iframeContainer.style.flexDirection = 'row';
@@ -133,14 +139,14 @@ function openPdfPreview(title, urlString, paginas) {
             iframeContainer.style.height = '100%';
         }
 
-        // Primeiro visualizador foca na Página 1
+        // Abre o primeiro arquivo (Página 1) no primeiro visualizador
         if (pdfIframe) {
-            pdfIframe.src = `${urlString}#page=1`;
+            pdfIframe.src = urls[0];
             pdfIframe.style.width = '50%';
             pdfIframe.style.display = 'block';
         }
 
-        // Cria ou configura o segundo visualizador para a Página 2
+        // Cria ou configura o segundo visualizador para o segundo arquivo (Página 2)
         if (!pdfIframe2) {
             pdfIframe2 = document.createElement('iframe');
             pdfIframe2.id = 'pdfIframe2';
@@ -149,17 +155,17 @@ function openPdfPreview(title, urlString, paginas) {
             if (iframeContainer) iframeContainer.appendChild(pdfIframe2);
         }
         
-        pdfIframe2.src = `${urlString}#page=2`;
+        pdfIframe2.src = urls[1];
         pdfIframe2.style.width = '50%';
         pdfIframe2.style.display = 'block';
 
     } else {
-        // Modo padrão para 1 página só
+        // Se houver apenas 1 arquivo cadastrado, abre normal em tela cheia
         if (iframeContainer) {
             iframeContainer.style.display = 'block';
         }
         if (pdfIframe) {
-            pdfIframe.src = urlString;
+            pdfIframe.src = urls[0];
             pdfIframe.style.width = '100%';
             pdfIframe.style.display = 'block';
         }
@@ -171,13 +177,6 @@ function openPdfPreview(title, urlString, paginas) {
 
     if (pdfPreviewPanel) pdfPreviewPanel.style.display = 'flex';
     if (resizerRight) resizerRight.style.display = 'flex';
-}
-
-function closePdfPreview() {
-    if (pdfPreviewPanel) pdfPreviewPanel.style.display = 'none';
-    if (resizerRight) resizerRight.style.display = 'none';
-    if (pdfIframe) pdfIframe.src = '';
-    if (pdfIframe2) pdfIframe2.src = '';
 }
 
 // ============================================================
