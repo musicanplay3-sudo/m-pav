@@ -111,6 +111,9 @@ function getViewMode() {
 // ============================================================
 // PDF (LÊ A VÍRGULA DIRETAMENTE DO STRING DA URL)
 // ============================================================
+// ============================================================
+// PDF (CORRIGIDO PARA TELA CHEIA E EVITAR ERRO 404)
+// ============================================================
 function openPdfPreview(title, urlString) {
     if (!urlString || urlString.trim() === '') {
         alert('Partitura não disponível para esta música.');
@@ -119,55 +122,37 @@ function openPdfPreview(title, urlString) {
 
     if (pdfPreviewTitle) pdfPreviewTitle.textContent = `Partitura: ${title}`;
     
-    // Divide os links caso haja uma vírgula no banco de dados
+    // Se houver dois arquivos separados por vírgula, pegamos apenas o primeiro (-1.pdf)
+    // porque o leitor em tela cheia já vai exibir o arquivo principal.
     const urls = urlString.split(',').map(u => u.trim());
+    let urlFinal = urls[0];
+
+    // CORREÇÃO DO 404: Garante que o caminho comece correto se não tiver barra inicial
+    if (!urlFinal.startsWith('http') && !urlFinal.startsWith('/')) {
+        // Se o seu HTML/JS estiver na raiz, isso ajuda o navegador a achar a pasta 'partituras'
+        urlFinal = './' + urlFinal; 
+    }
 
     const iframeContainer = pdfIframe ? pdfIframe.parentElement : null;
 
-    // Se encontrar mais de 1 arquivo separado por vírgula
-    if (urls.length >= 2) {
-        if (iframeContainer) {
-            iframeContainer.style.display = 'flex';
-            iframeContainer.style.flexDirection = 'row';
-            iframeContainer.style.gap = '10px';
-            iframeContainer.style.width = '100%';
-            iframeContainer.style.height = '100%';
-        }
+    // Configura o container para exibir em Tela Cheia Única (100%)
+    if (iframeContainer) {
+        iframeContainer.style.display = 'block';
+        iframeContainer.style.width = '100%';
+        iframeContainer.style.height = '100%';
+    }
 
-        // Abre o primeiro arquivo no visualizador esquerdo
-        if (pdfIframe) {
-            pdfIframe.src = urls[0];
-            pdfIframe.style.width = '50%';
-            pdfIframe.style.display = 'block';
-        }
+    // Alimenta o primeiro iframe com 100% de largura
+    if (pdfIframe) {
+        pdfIframe.src = urlFinal;
+        pdfIframe.style.width = '100%';
+        pdfIframe.style.display = 'block';
+    }
 
-        // Cria ou configura o segundo visualizador no lado direito
-        if (!pdfIframe2) {
-            pdfIframe2 = document.createElement('iframe');
-            pdfIframe2.id = 'pdfIframe2';
-            pdfIframe2.style.border = '0';
-            pdfIframe2.style.height = '100%';
-            if (iframeContainer) iframeContainer.appendChild(pdfIframe2);
-        }
-        
-        pdfIframe2.src = urls[1];
-        pdfIframe2.style.width = '50%';
-        pdfIframe2.style.display = 'block';
-
-    } else {
-        // Se houver apenas 1 arquivo cadastrado, abre normal em tela cheia única
-        if (iframeContainer) {
-            iframeContainer.style.display = 'block';
-        }
-        if (pdfIframe) {
-            pdfIframe.src = urls[0];
-            pdfIframe.style.width = '100%';
-            pdfIframe.style.display = 'block';
-        }
-        if (pdfIframe2) {
-            pdfIframe2.src = '';
-            pdfIframe2.style.display = 'none';
-        }
+    // Esconde e limpa o segundo visualizador para nunca mais dividir a tela
+    if (pdfIframe2) {
+        pdfIframe2.src = '';
+        pdfIframe2.style.display = 'none';
     }
 
     if (pdfPreviewPanel) pdfPreviewPanel.style.display = 'flex';
