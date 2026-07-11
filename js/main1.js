@@ -6,8 +6,8 @@ const LINK_DA_PASTA_MP3 = "https://albertinosesc.github.io/audionbm/";
 // Variável global para rastrear quais IDs de áudio realmente existem no GitHub
 let arquivosDisponiveisNoGithub = [];
 
-// Guarda o link do PDF atualmente aberto para os botões de alternância saberem o que renderizar
-let currentActivePdfUrl = "";
+// Guarda a música ativa inteira para os botões do cabeçalho saberem o que tocar
+let currentActiveMusic = null;
 
 // ============================================================
 // FUNÇÃO AUXILIAR
@@ -22,7 +22,7 @@ function localGetYouTubeId(url) {
 }
 
 // ============================================================
-// ELEMENTOS DOM (Ajustados conforme o seu HTML real)
+// ELEMENTOS DOM
 // ============================================================
 const searchGeneral = document.getElementById('searchGeneral');
 const filterComposer = document.getElementById('filterComposer');
@@ -36,19 +36,21 @@ const pdfPreviewPanel = document.getElementById('pdfPreviewPanel');
 const resizerLeft = document.getElementById('resizerLeft');
 const resizerRight = document.getElementById('resizerRight');
 const pdfPreviewTitle = document.getElementById('pdfPreviewTitle');
-const pdfIframe = document.getElementById('pdfIframe'); // Primeiro visualizador (Página 1)
+const pdfIframe = document.getElementById('pdfIframe'); // Primeiro visualizador
 const btnClosePreview = document.getElementById('btnClosePreview');
 const currentPlayingTitle = document.getElementById('currentPlayingTitle');
 const currentPlayingMeta = document.getElementById('currentPlayingMeta');
 const playerLeft = document.getElementById('playerLeft');
 
-// Segundo visualizador de PDF (Gerado dinamicamente caso não exista)
+// Segundo visualizador de PDF (Gerado dinamicamente)
 let pdfIframe2 = document.getElementById('pdfIframe2');
 
-// Elementos de controle dinâmicos das páginas
+// Elementos de controle dinâmicos das páginas e áudio
 let btnView1Page = null;
 let btnView2Pages = null;
 let btnFullscreen = null;
+let btnHeaderPlayVideo = null;
+let btnHeaderPlayMp3 = null;
 
 // ============================================================
 // TOGGLE SIDEBAR
@@ -76,7 +78,6 @@ let activeVideoIndex = -1;
 let activeMp3Index = -1;
 let activePlaylistType = null; // 'video' ou 'mp3'
 
-// Estado dos toggles das playlists (visível por padrão)
 let videoListVisible = true;
 let mp3ListVisible = true;
 
@@ -117,47 +118,72 @@ function getViewMode() {
 }
 
 // ============================================================
-// CRIAÇÃO E GERENCIAMENTO DOS BOTÕES DE VISUALIZAÇÃO DO PDF
+// CRIAÇÃO E GERENCIAMENTO DOS BOTÕES NO TOPO DO PDF (INCLUINDO AUDIO/VÍDEO)
 // ============================================================
 function injectPdfControlButtons() {
-    // Alvo corrigido para bater exatamente com a classe do seu HTML: .pdf-preview-header
     const header = document.querySelector('.pdf-preview-header');
-    if (!header || document.getElementById('pdfCustomControls')) return;
+    if (!header) return;
+
+    // Se os controles já existirem, nós os removemos para recriar com os botões certos da música atual
+    const antigoContainer = document.getElementById('pdfCustomControls');
+    if (antigoContainer) antigoContainer.remove();
 
     const controlWrapper = document.createElement('div');
     controlWrapper.id = 'pdfCustomControls';
     controlWrapper.style.display = 'flex';
-    controlWrapper.style.gap = '8px';
+    controlWrapper.style.gap = '6px';
     controlWrapper.style.alignItems = 'center';
     controlWrapper.style.marginRight = '15px';
 
+    if (!currentActiveMusic) return;
+
+    const ytId = localGetYouTubeId(currentActiveMusic.youtubeUrl) !== null;
+    const hasMp3 = (currentActiveMusic.mp3Url && currentActiveMusic.mp3Url.trim() !== '') || arquivosDisponiveisNoGithub.includes(currentActiveMusic.id);
+
+    // Estrutura HTML contendo layout de páginas E players de áudio/vídeo imediatos
     controlWrapper.innerHTML = `
-        <button id="btnView1Page" style="padding: 5px 10px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: 1px solid #555; background: #222; color: #fff; font-weight: bold;">📄 1 Pág</button>
-        <button id="btnView2Pages" style="padding: 5px 10px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: 1px solid #555; background: #3498db; color: #fff; font-weight: bold;">📖 2 Págs</button>
-        <button id="btnFullscreen" style="padding: 5px 10px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: 1px solid #555; background: #27ae60; color: #fff; font-weight: bold;">🖵 Tela Cheia</button>
+        <button id="btnHeaderPlayVideo" class="${ytId ? '' : 'disabled'}" style="padding: 5px 9px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: 1px solid #555; background: #e74c3c; color: #fff; font-weight: bold; ${ytId ? '' : 'opacity:0.4; pointer-events:none;'}">▶️ Vídeo</button>
+        <button id="btnHeaderPlayMp3" class="${hasMp3 ? '' : 'disabled'}" style="padding: 5px 9px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: 1px solid #555; background: #9b59b6; color: #fff; font-weight: bold; margin-right: 15px; ${hasMp3 ? '' : 'opacity:0.4; pointer-events:none;'}">🎧 Áudio</button>
+        
+        <button id="btnView1Page" style="padding: 5px 9px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: 1px solid #555; background: #3498db; color: #fff; font-weight: bold;">📄 1 Pág</button>
+        <button id="btnView2Pages" style="padding: 5px 9px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: 1px solid #555; background: #222; color: #fff; font-weight: bold;">📖 2 Págs</button>
+        <button id="btnFullscreen" style="padding: 5px 9px; font-size: 0.85rem; cursor: pointer; border-radius: 4px; border: 1px solid #555; background: #27ae60; color: #fff; font-weight: bold;">🖵 Tela Cheia</button>
     `;
 
-    // Coloca os botões antes do botão de fechar (btnClosePreview)
     header.insertBefore(controlWrapper, btnClosePreview);
 
     btnView1Page = document.getElementById('btnView1Page');
     btnView2Pages = document.getElementById('btnView2Pages');
     btnFullscreen = document.getElementById('btnFullscreen');
+    btnHeaderPlayVideo = document.getElementById('btnHeaderPlayVideo');
+    btnHeaderPlayMp3 = document.getElementById('btnHeaderPlayMp3');
 
+    // Escutas dos eventos de cliques
     btnView1Page.addEventListener('click', () => setPdfLayout(1));
     btnView2Pages.addEventListener('click', () => setPdfLayout(2));
     btnFullscreen.addEventListener('click', togglePdfFullscreen);
+    
+    if (ytId) {
+        btnHeaderPlayVideo.addEventListener('click', () => playMusic(currentActiveMusic.id, false));
+    }
+    if (hasMp3) {
+        btnHeaderPlayMp3.addEventListener('click', () => playMusic(currentActiveMusic.id, true));
+    }
 }
 
 function setPdfLayout(pagesCount) {
-    if (!currentActivePdfUrl) return;
+    if (!currentActiveMusic || !currentActiveMusic.pdfUrl) return;
     
-    // Pegamos a tag <section class="pdf-preview-panel"> como container estrutural
+    let urlFinal = currentActiveMusic.pdfUrl.trim();
+    if (!urlFinal.startsWith('http') && !urlFinal.startsWith('/')) {
+        urlFinal = './' + urlFinal;
+    }
+
     const iframeContainer = pdfPreviewPanel;
 
     if (pagesCount === 1) {
         if (pdfIframe) {
-            pdfIframe.src = `${currentActivePdfUrl}#page=1&view=FitH`;
+            pdfIframe.src = `${urlFinal}#page=1&view=FitH`;
             pdfIframe.style.width = '100%';
             pdfIframe.style.height = 'calc(100% - 50px)';
         }
@@ -170,7 +196,7 @@ function setPdfLayout(pagesCount) {
 
     } else if (pagesCount === 2) {
         if (pdfIframe) {
-            pdfIframe.src = `${currentActivePdfUrl}#page=1&view=FitH`;
+            pdfIframe.src = `${urlFinal}#page=1&view=FitH`;
             pdfIframe.style.width = '50%';
             pdfIframe.style.height = 'calc(100% - 50px)';
             pdfIframe.style.float = 'left';
@@ -185,7 +211,7 @@ function setPdfLayout(pagesCount) {
             if (iframeContainer) iframeContainer.appendChild(pdfIframe2);
         }
         
-        pdfIframe2.src = `${currentActivePdfUrl}#page=2&view=FitH`;
+        pdfIframe2.src = `${urlFinal}#page=2&view=FitH`;
         pdfIframe2.style.width = '50%';
         pdfIframe2.style.float = 'right';
         pdfIframe2.style.display = 'block';
@@ -217,7 +243,7 @@ document.addEventListener('fullscreenchange', () => {
 });
 
 // ============================================================
-// PDF (ABRIR PREVIEW INICIAL)
+// PDF (ABRIR PREVIEW INICIAL - CONFIGURADO PARA 1 PÁGINA PADRÃO)
 // ============================================================
 function openPdfPreview(title, urlString) {
     if (!urlString || urlString.trim() === '') {
@@ -225,20 +251,25 @@ function openPdfPreview(title, urlString) {
         return;
     }
 
-    if (pdfPreviewTitle) pdfPreviewTitle.textContent = `Partitura: ${title}`;
+    if (typeof musicDatabase === 'undefined') return;
     
-    let urlFinal = urlString.trim();
-    if (!urlFinal.startsWith('http') && !urlFinal.startsWith('/')) {
-        urlFinal = './' + urlFinal;
+    // Localiza e salva o objeto completo da música ativa
+    const music = musicDatabase.find(m => m.title === title || m.pdfUrl === urlString);
+    if (music) {
+        currentActiveMusic = music;
+    } else {
+        currentActiveMusic = { id: Date.now(), title: title, pdfUrl: urlString, youtubeUrl: '', mp3Url: '' };
     }
 
-    currentActivePdfUrl = urlFinal;
+    if (pdfPreviewTitle) pdfPreviewTitle.textContent = `Partitura: ${title}`;
 
     if (pdfPreviewPanel) pdfPreviewPanel.style.display = 'block';
     if (resizerRight) resizerRight.style.display = 'flex';
 
     injectPdfControlButtons();
-    setPdfLayout(2); // Começa em 2 páginas lado a lado
+    
+    // MUDANÇA PEDIDA: Abre por padrão no formato de 1 Página sempre!
+    setPdfLayout(1); 
 }
 
 function closePdfPreview() {
@@ -249,7 +280,7 @@ function closePdfPreview() {
     if (resizerRight) resizerRight.style.display = 'none';
     if (pdfIframe) pdfIframe.src = '';
     if (pdfIframe2) pdfIframe2.src = '';
-    currentActivePdfUrl = "";
+    currentActiveMusic = null;
 }
 
 // ============================================================
@@ -427,6 +458,7 @@ function removeFromPlaylist(type, index) {
     updatePlaylistUI();
 }
 
+// O restante do arquivo segue a mesma estrutura original prototipada
 function clearPlaylist(type) {
     if (type === 'video') {
         if (videoPlaylist.length === 0) return;
