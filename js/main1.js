@@ -35,13 +35,13 @@ const pdfPreviewPanel = document.getElementById('pdfPreviewPanel');
 const resizerLeft = document.getElementById('resizerLeft');
 const resizerRight = document.getElementById('resizerRight');
 const pdfPreviewTitle = document.getElementById('pdfPreviewTitle');
-const pdfIframe = document.getElementById('pdfIframe'); // Primeiro visualizador
+const pdfIframe = document.getElementById('pdfIframe'); // Primeiro visualizador (Página 1)
 const btnClosePreview = document.getElementById('btnClosePreview');
 const currentPlayingTitle = document.getElementById('currentPlayingTitle');
 const currentPlayingMeta = document.getElementById('currentPlayingMeta');
 const playerLeft = document.getElementById('playerLeft');
 
-// NOVA SELEÇÃO: Segundo visualizador de PDF (Certifique-se de adicionar a tag <iframe id="pdfIframe2"> no seu HTML caso queira controle total por ID, mas o JS cuidará disso dinamicamente)
+// Segundo visualizador de PDF (Gerado dinamicamente caso não exista no HTML)
 let pdfIframe2 = document.getElementById('pdfIframe2');
 
 // ============================================================
@@ -111,9 +111,9 @@ function getViewMode() {
 }
 
 // ============================================================
-// PDF (ATUALIZADO COM SUPORTE A DOIS VISUALIZADORES LADO A LADO)
+// PDF (ABRE O MESMO ARQUIVO NAS PÁGINAS 1 E 2 LADO A LADO)
 // ============================================================
-function openPdfPreview(title, urlString) {
+function openPdfPreview(title, urlString, paginas) {
     if (!urlString || urlString.trim() === '') {
         alert('Partitura não disponível para esta música.');
         return;
@@ -121,14 +121,10 @@ function openPdfPreview(title, urlString) {
 
     if (pdfPreviewTitle) pdfPreviewTitle.textContent = `Partitura: ${title}`;
     
-    // Divide os links caso haja uma vírgula (ex: "pag1.pdf, pag2.pdf")
-    const urls = urlString.split(',').map(u => u.trim());
-
-    // Procura o container que envolve os iframes de PDF para ajustar o layout dele
     const iframeContainer = pdfIframe ? pdfIframe.parentElement : null;
 
-    if (urls.length >= 2) {
-        // Se houver 2 URLs ou mais, ativa o modo de tela dividida lateral
+    // Se o banco indicar que a música tem 2 páginas (ou se você usar a lógica de detecção)
+    if (paginas === 2) {
         if (iframeContainer) {
             iframeContainer.style.display = 'flex';
             iframeContainer.style.flexDirection = 'row';
@@ -137,14 +133,14 @@ function openPdfPreview(title, urlString) {
             iframeContainer.style.height = '100%';
         }
 
-        // Configura a página 1 no primeiro visualizador
+        // Primeiro visualizador foca na Página 1
         if (pdfIframe) {
-            pdfIframe.src = urls[0];
+            pdfIframe.src = `${urlString}#page=1`;
             pdfIframe.style.width = '50%';
             pdfIframe.style.display = 'block';
         }
 
-        // Cria ou configura o segundo visualizador dinamicamente se ele não existir no HTML
+        // Cria ou configura o segundo visualizador para a Página 2
         if (!pdfIframe2) {
             pdfIframe2 = document.createElement('iframe');
             pdfIframe2.id = 'pdfIframe2';
@@ -153,23 +149,23 @@ function openPdfPreview(title, urlString) {
             if (iframeContainer) iframeContainer.appendChild(pdfIframe2);
         }
         
-        pdfIframe2.src = urls[1];
+        pdfIframe2.src = `${urlString}#page=2`;
         pdfIframe2.style.width = '50%';
         pdfIframe2.style.display = 'block';
 
     } else {
-        // Se houver apenas 1 URL, volta para o comportamento padrão de tela cheia única
+        // Modo padrão para 1 página só
         if (iframeContainer) {
             iframeContainer.style.display = 'block';
         }
         if (pdfIframe) {
-            pdfIframe.src = urls[0];
+            pdfIframe.src = urlString;
             pdfIframe.style.width = '100%';
             pdfIframe.style.display = 'block';
         }
         if (pdfIframe2) {
             pdfIframe2.src = '';
-            pdfIframe2.style.display = 'none'; // Esconde o segundo se não for usado
+            pdfIframe2.style.display = 'none';
         }
     }
 
@@ -239,7 +235,6 @@ async function escanearAudiosGithub() {
 
     const resultados = await Promise.all(checagens);
     arquivosDisponiveisNoGithub = resultados.filter(r => r.existe).map(r => r.id);
-    console.log("Áudios validados no GitHub (IDs ativos):", arquivosDisponiveisNoGithub);
 }
 
 // ============================================================
@@ -289,7 +284,7 @@ function playMusic(musicId, forceMp3 = false) {
         activePlaylistType = 'mp3';
         audio.addEventListener('ended', () => playNext());
     } 
-    // ===== YOUTUBE (NATIVO SEM POSTMESSAGE / ERRO DE ORIGEM) =====
+    // ===== YOUTUBE =====
     else if (ytId && !forceMp3) {
         const iframe = document.createElement('iframe');
         iframe.id = 'youtube-player-' + musicId;
@@ -328,7 +323,6 @@ function addToVideoPlaylist(musicId) {
     }
 }
 
-// Correção para permitir que o MP3 adicione à sua própria lista
 function addToMp3Playlist(musicId) {
     if (!mp3Playlist.includes(musicId)) {
         mp3Playlist.push(musicId);
@@ -363,7 +357,6 @@ function removeFromPlaylist(type, index) {
     updatePlaylistUI();
 }
 
-// Mantido os confirmadores de fila de playlist intactos
 function clearPlaylist(type) {
     if (type === 'video') {
         if (videoPlaylist.length === 0) return;
@@ -439,7 +432,6 @@ function playVideoPlaylistItem(index) {
     }
 }
 
-// Passando true para forçar o MP3 da playlist
 function playMp3PlaylistItem(index) {
     if (index >= 0 && index < mp3Playlist.length) {
         activeMp3Index = index;
@@ -501,7 +493,7 @@ function exportPlaylist(type) {
 }
 
 // ============================================================
-// RENDERIZAÇÃO DO CATÁLOGO (DEFINIÇÃO PRECISA DE ÁUDIO)
+// RENDERIZAÇÃO DO CATÁLOGO (LEITURA INTELIGENTE DE PÁGINAS)
 // ============================================================
 function renderCatalog() {
     if (typeof musicDatabase === 'undefined') return;
@@ -532,16 +524,19 @@ function renderCatalog() {
         card.className = `music-card ${music.id === currentlyPlayingMusicId ? 'playing-now' : ''}`;
         card.id = `card-${music.id}`;
         
-        // Escape seguro para o título aceitar links múltiplos com aspas
         const safeTitle = music.title.replace(/'/g, "\\'").replace(/"/g, '&quot;');
         const safePdfUrl = music.pdfUrl ? music.pdfUrl.replace(/'/g, "\\'") : '';
+
+        // NOVA LÓGICA: Lê do seu JSON se a música possui 2 páginas. Se não houver a propriedade, o padrão é 1.
+        const qtdPaginas = music.paginas === 2 ? 2 : 1;
 
         const hasPdf = music.pdfUrl && music.pdfUrl.trim() !== '';
         const hasVideo = localGetYouTubeId(music.youtubeUrl) !== null;
         const hasMp3 = (music.mp3Url && music.mp3Url.trim() !== '') || (music.temMp3 === true) || arquivosDisponiveisNoGithub.includes(music.id);
 
+        // Passa a quantidade de páginas diretamente para o clique do botão
         const pdfBtn = `<button class="btn-view-pdf ${hasPdf ? '' : 'disabled'}" 
-                            onclick="${hasPdf ? `openPdfPreview('${safeTitle}','${safePdfUrl}')` : ''}">📄</button>`;
+                            onclick="${hasPdf ? `openPdfPreview('${safeTitle}','${safePdfUrl}', ${qtdPaginas})` : ''}">📄</button>`;
         const videoAddBtn = `<button class="btn-add-video ${hasVideo ? '' : 'disabled'}" 
                                 onclick="${hasVideo ? `addToVideoPlaylist(${music.id})` : ''}">🎬</button>`;
         const mp3AddBtn = `<button class="btn-add-mp3 ${hasMp3 ? '' : 'disabled'}" 
@@ -629,14 +624,9 @@ if (btnClear) {
 window.addEventListener('DOMContentLoaded', async () => {
     initFilters();
     loadPlaylists();
-    
-    // 1. Escaneia quais áudios existem no servidor do GitHub Pages antes de renderizar
     await escanearAudiosGithub();
-    
-    // 2. Renderiza a tabela do catálogo aplicando as travas corretas nos botões de fone de ouvido
     renderCatalog();
     
-    // Aplica estado inicial dos toggles (visível)
     const videoItems = document.getElementById('videoPlaylistItems');
     const mp3Items = document.getElementById('mp3PlaylistItems');
     if (videoItems) videoItems.classList.remove('hidden');
