@@ -1,7 +1,7 @@
 // ============================================================
 // LINK DO REPOSITÓRIO GITHUB (ÁUDIOS MP3)
 // ============================================================
-const LINK_DA_PASTA_MP3 = "https://albertinosesc.github.io/audionbm/audios/";
+const LINK_DA_PASTA_MP3 = "https://albertinosesc.github.io/audionbm/";
 
 // Variável global para rastrear quais IDs de áudio realmente existem no GitHub
 let arquivosDisponiveisNoGithub = [];
