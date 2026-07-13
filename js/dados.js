@@ -66,7 +66,17 @@ const musicDatabase = [
 { id: 24021, title: "24021 - Arkansas Traveler", composer: "American Folk Tune", book: "612 - PDF", pdfUrl: "partituras/24021.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24022, title: "24022 - When Johnny Comes Marching Home", composer: "American Folk Song", book: "612 - PDF", pdfUrl: "partituras/24022.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24023, title: "24023 - La Donna è Mobile", composer: "Giuseppi Verdi", book: "612 - PDF", pdfUrl: "partituras/24023.pdf", youtubeUrl: "", mp3Url: "" },
-{ id: 24024, title: "24024 - The Polovetsian Dances", composer: "A. Borodin", book: "612 - PDF", pdfUrl: "partituras/24024.pdf", youtubeUrl: "", mp3Url: "" }
+{ id: 24024, title: "24024 - The Polovetsian Dances", composer: "A. Borodin", book: "612 - PDF", pdfUrl: "partituras/24024.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24025, title: "24025 - Rag Time n1", composer: "Christopher Norton", book: "8302 - PDF", pdfUrl: "partituras/24025.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24026, title: "24026 - Dance", composer: "Béla Bartók", book: "8302 - PDF", pdfUrl: "partituras/24026.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24027, title: "24027 - The ambling armadilho", composer: "Robert Keane", book: "8302 - PDF", pdfUrl: "partituras/24027.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24028, title: "24028 - Groovy Movie", composer: "Elissa Milne", book: "8302 - PDF", pdfUrl: "partituras/24028.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24029, title: "24029 - Ol' rockin' chair blues", composer: "Martha Mier", book: "8302 - PDF", pdfUrl: "partituras/24029.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24030, title: "24030 - TV zombie", composer: "Sonny Chua", book: "8302 - PDF", pdfUrl: "partituras/24030.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24031, title: "24031 - Garge sale", composer: "Pamela Wedgwood", book: "8302 - PDF", pdfUrl: "partituras/24031.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24032, title: "24032 - Marcia trionfale", composer: "Giuseppe Verdi", book: "8302 - PDF", pdfUrl: "partituras/24032.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24033, title: "24033 - The mad Hatter", composer: "Celi Braumer", book: "8302 - PDF", pdfUrl: "partituras/24033.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24034, title: "24034 - The Addams Family theme", composer: "Vic Mizzy", book: "8302 - PDF", pdfUrl: "partituras/24034.pdf", youtubeUrl: "", mp3Url: "" }
 
 
 ];
