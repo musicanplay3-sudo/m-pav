@@ -600,3 +600,17 @@
                 align-items: flex-start;
             }
         }
+
+.no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: #bdc3c7;
+    font-size: 1.2rem;
+    grid-column: 1 / -1;
+}
+
+.no-results .search-icon {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 15px;
+}
