@@ -78,8 +78,7 @@ const musicDatabase = [
 { id: 24033, title: "24033 - The mad Hatter", composer: "Celi Braumer", book: "8302 - PDF", pdfUrl: "partituras/24033.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24034, title: "24034 - The Addams Family theme", composer: "Vic Mizzy", book: "8302 - PDF", pdfUrl: "partituras/24034.pdf", youtubeUrl: "", mp3Url: "" },
 
-
-{ id: 24050, title: "24050 - C Warm", composer: "up", book: "7019 - PDF", pdfUrl: "partituras/24050.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24050, title: "24050 - C Warm-up", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24050.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24051, title: "24051 - Shouts and Whispers", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24051.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24052, title: "24052 - Stealing 2nd Base", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24052.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24053, title: "24053 - Skipping Frogs", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24053.pdf", youtubeUrl: "", mp3Url: "" },
