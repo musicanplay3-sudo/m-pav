@@ -76,7 +76,41 @@ const musicDatabase = [
 { id: 24031, title: "24031 - Garge sale", composer: "Pamela Wedgwood", book: "8302 - PDF", pdfUrl: "partituras/24031.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24032, title: "24032 - Marcia trionfale", composer: "Giuseppe Verdi", book: "8302 - PDF", pdfUrl: "partituras/24032.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24033, title: "24033 - The mad Hatter", composer: "Celi Braumer", book: "8302 - PDF", pdfUrl: "partituras/24033.pdf", youtubeUrl: "", mp3Url: "" },
-{ id: 24034, title: "24034 - The Addams Family theme", composer: "Vic Mizzy", book: "8302 - PDF", pdfUrl: "partituras/24034.pdf", youtubeUrl: "", mp3Url: "" }
+{ id: 24034, title: "24034 - The Addams Family theme", composer: "Vic Mizzy", book: "8302 - PDF", pdfUrl: "partituras/24034.pdf", youtubeUrl: "", mp3Url: "" },
+
+
+{ id: 24050, title: "24050 - C Warm", composer: "up", book: "7019 - PDF", pdfUrl: "partituras/24050.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24051, title: "24051 - Shouts and Whispers", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24051.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24052, title: "24052 - Stealing 2nd Base", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24052.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24053, title: "24053 - Skipping Frogs", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24053.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24054, title: "24054 - Happy Halloween", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24054.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24055, title: "24055 - Noah's Ark", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24055.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24056, title: "24056 - Four Funny Clowns", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24056.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24057, title: "24057 - Boogie Beat", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24057.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24058, title: "24058 - Five Hunting Hounds", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24058.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24059, title: "24059 - Indian Drums", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24059.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24060, title: "24060 - My Computer", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24060.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24061, title: "24061 - Playing C Chords", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24061.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24062, title: "24062 - Row, Row, Row Your Boat", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24062.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24063, title: "24063 - Love Somebody", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24063.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24064, title: "24064 - Middle C Warm", composer: "up", book: "7019 - PDF", pdfUrl: "partituras/24064.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24065, title: "24065 - I'm a Little Teapot", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24065.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24066, title: "24066 - Birthday Fun", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24066.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24067, title: "24067 - Skip to My Lou", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24067.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24068, title: "24068 - The Funny Snowman", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24068.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24069, title: "24069 - Lavender's Blue", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24069.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24070, title: "24070 - Aura Lee", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24070.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24071, title: "24071 - Scarborough Fair", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24071.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24072, title: "24072 - G Warm", composer: "up", book: "7019 - PDF", pdfUrl: "partituras/24072.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24073, title: "24073 - That Old Car", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24073.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24074, title: "24074 - Thanksgiving Turkey", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24074.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24075, title: "24075 - The Singing Donkey", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24075.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24076, title: "24076 - The Clock", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24076.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24077, title: "24077 - Basketball", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24077.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24078, title: "24078 - Electric Bass", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24078.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24079, title: "24079 - The Dragon's Lair", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24079.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24080, title: "24080 - Indian Dance", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24080.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24081, title: "24081 - JIngle Bells", composer: "James Bastien", book: "7019 - PDF", pdfUrl: "partituras/24081.pdf", youtubeUrl: "", mp3Url: "" }
 
 
 ];
