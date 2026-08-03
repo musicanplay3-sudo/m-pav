@@ -122,7 +122,7 @@ const musicDatabase = [
 { id: 24116, title: "24116 - Magic Flute", composer: "W. A. Mozart", book: "6936 - PDF", pdfUrl: "partituras/24116.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24117, title: "24117 - The Wishbone", composer: "John W. Schaum", book: "6936 - PDF", pdfUrl: "partituras/24117.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24118, title: "24118 - The Campbells Are Coming", composer: "Tradicional Escocês", book: "6936 - PDF", pdfUrl: "partituras/24118.pdf", youtubeUrl: "", mp3Url: "" },
-{ id: 24119, title: "24119 - The Dress Parade ("Marche Militaire")", composer: "Franz Schubert", book: "6936 - PDF", pdfUrl: "partituras/24119.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24119, title: "24119 - The Dress Parade", composer: "Franz Schubert", book: "6936 - PDF", pdfUrl: "partituras/24119.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24120, title: "24120 - Little Brown Bug", composer: "John W. Schaum", book: "6936 - PDF", pdfUrl: "partituras/24120.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24121, title: "24121 - Sailing", composer: "Old Song of the Sea", book: "6936 - PDF", pdfUrl: "partituras/24121.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24122, title: "24122 - The Clothes Line Waltz", composer: "John W. Schaum", book: "6936 - PDF", pdfUrl: "partituras/24122.pdf", youtubeUrl: "", mp3Url: "" },
@@ -144,7 +144,7 @@ const musicDatabase = [
 { id: 24138, title: "24138 - Putting Salt on a Bird's Tail", composer: "John W. Schaum", book: "6936 - PDF", pdfUrl: "partituras/24138.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24139, title: "24139 - On the Levee", composer: "Old American Song", book: "6936 - PDF", pdfUrl: "partituras/24139.pdf", youtubeUrl: "", mp3Url: "" }
 
-]
+];
 function getYouTubeId(url) {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
