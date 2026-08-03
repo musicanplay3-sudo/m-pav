@@ -144,9 +144,7 @@ const musicDatabase = [
 { id: 24138, title: "24138 - Putting Salt on a Bird's Tail", composer: "John W. Schaum", book: "6936 - PDF", pdfUrl: "partituras/24138.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24139, title: "24139 - On the Levee", composer: "Old American Song", book: "6936 - PDF", pdfUrl: "partituras/24139.pdf", youtubeUrl: "", mp3Url: "" }
 
-
-];
-
+]
 function getYouTubeId(url) {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
