@@ -146,7 +146,7 @@
             <!-- Seletor de Pastas do Google Drive -->
             <select id="folder-select" class="select-folder">
                 <option value="1pVycKNdIPZc6zRlB2p_iw-gqJI3MJJnH">Pasta: ABC</option>
-                <option value="1fvIA0AxfP6QAw36vtZ6eGLkGGXTvuIMY">Pasta: PDF</option>
+                <option value="1V1zF3xlxMhydB8pt7-L87PHz8yGzH9l8">Pasta: PDF</option>
                 <option value="1RGmapmjfKUPjZSFqNrw3qn28ORqfJKvm">Pasta: Outros</option>
             </select>
             <button class="btn btn-drive-save" onclick="salvarNoGoogleDrive()">Salvar no Drive ☁️</button>
@@ -165,7 +165,7 @@
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyUQ-i4fIdO9HS3JI0f3AHcBVRQFs5WBwPjuI6jJdtDE_5h3xEU_H0ZdGEzdwYNDVZwyg/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzUsmWse1TpcSlUfEgymgDM5ay-1ea9qex2MhaA6oN69meXNYUJOtsVyT5DfbZTLGuMtg/exec";
 
     const textArea = document.getElementById('text-area');
     const filenameInput = document.getElementById('filename-input');
@@ -201,7 +201,7 @@
             pastaId: pastaId
         };
 
-        // Envio formatado em text/plain para evitar bloqueios de CORS/Preflight no Apps Script
+        // Envio formatado em text/plain para evitar bloqueios de CORS no Apps Script
         fetch(WEB_APP_URL, {
             method: 'POST',
             mode: 'no-cors', 
@@ -251,7 +251,8 @@
                 filenameInput.value = dados.nome.replace(/\.[^/.]+$/, "");
                 alert("Arquivo '" + dados.nome + "' carregado com sucesso da " + nomePasta + "!");
             } else {
-                alert(dados.erro || "Não foi possível encontrar o arquivo.");
+                // Ajustado para ler 'mensagem' ou 'erro'
+                alert(dados.mensagem || dados.erro || "Não foi possível encontrar o arquivo.");
             }
 
         } catch (erro) {
@@ -303,7 +304,6 @@
                 .then(() => alert("Texto copiado com sucesso!"))
                 .catch(() => alert("Falha ao copiar texto."));
         } else {
-            // Fallback para navegadores mais antigos
             textArea.select();
             textArea.setSelectionRange(0, 99999);
             try {
