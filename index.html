@@ -165,7 +165,7 @@
 </div>
 
 <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwnrj8cxVq1HDCeGlh6lV2lbh7FhkKD-ITbEoyqOQV0GKdEjwngiXVReSaJKCYHx7KGWQ/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyUQ-i4fIdO9HS3JI0f3AHcBVRQFs5WBwPjuI6jJdtDE_5h3xEU_H0ZdGEzdwYNDVZwyg/exec";
 
     const textArea = document.getElementById('text-area');
     const filenameInput = document.getElementById('filename-input');
@@ -185,6 +185,11 @@
         const pastaId = folderSelect.value;
         const nomePasta = folderSelect.options[folderSelect.selectedIndex].text;
 
+        if (texto.trim() === "") {
+            alert("Digite algum texto antes de salvar!");
+            return;
+        }
+
         if (nomeArquivo === "") nomeArquivo = "documento";
         if (!nomeArquivo.endsWith('.txt')) nomeArquivo += '.txt';
 
@@ -196,11 +201,12 @@
             pastaId: pastaId
         };
 
+        // Envio formatado em text/plain para evitar bloqueios de CORS/Preflight no Apps Script
         fetch(WEB_APP_URL, {
             method: 'POST',
             mode: 'no-cors', 
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'text/plain'
             },
             body: JSON.stringify(dados)
         })
@@ -215,7 +221,7 @@
         });
     }
 
-    function buscarDoGoogleDrive() {
+    async function buscarDoGoogleDrive() {
         let nomeBuscar = prompt("Digite o nome exato do arquivo que deseja buscar do Google Drive:");
         
         if (!nomeBuscar || nomeBuscar.trim() === "") {
@@ -232,31 +238,30 @@
 
         mostrarStatus("Buscando arquivo '" + nomeBuscar + "' na " + nomePasta + "...", true);
 
-        const urlComParametros = WEB_APP_URL + "?nome=" + encodeURIComponent(nomeBuscar) + "&pastaId=" + encodeURIComponent(pastaId);
+        const urlComParametros = `${WEB_APP_URL}?nome=${encodeURIComponent(nomeBuscar)}&pastaId=${encodeURIComponent(pastaId)}`;
 
-        fetch(urlComParametros)
-        .then(resposta => resposta.json())
-        .then(dados => {
+        try {
+            const resposta = await fetch(urlComParametros);
+            const dados = await resposta.json();
+
             mostrarStatus("", false);
             
-            if (dados.status === "sucesso") {
+            if (dados.sucesso) {
                 textArea.value = dados.conteudo;
                 filenameInput.value = dados.nome.replace(/\.[^/.]+$/, "");
                 alert("Arquivo '" + dados.nome + "' carregado com sucesso da " + nomePasta + "!");
-            } else if (dados.status === "nao_encontrado") {
-                alert(dados.mensagem);
             } else {
-                alert("Erro retornado pelo servidor: " + dados.mensagem);
+                alert(dados.erro || "Não foi possível encontrar o arquivo.");
             }
-        })
-        .catch(erro => {
+
+        } catch (erro) {
             mostrarStatus("", false);
-            console.error(erro);
+            console.error("Erro na requisição:", erro);
             alert("Não foi possível conectar ao Google Drive ou ler o arquivo.");
-        });
+        }
     }
 
-    // --- FUNÇÕES TRADICIONAIS (LOCAIS) ---
+    // --- FUNÇÕES LOCAIS ---
 
     function salvarArquivoLocal() {
         const texto = textArea.value;
@@ -292,15 +297,23 @@
             alert("Não há texto para copiar!");
             return;
         }
-        textArea.select();
-        textArea.setSelectionRange(0, 99999);
-        try {
-            document.execCommand('copy');
-            alert("Texto copiado!");
-        } catch (err) {
-            alert("Erro ao copiar.");
+
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(textArea.value)
+                .then(() => alert("Texto copiado com sucesso!"))
+                .catch(() => alert("Falha ao copiar texto."));
+        } else {
+            // Fallback para navegadores mais antigos
+            textArea.select();
+            textArea.setSelectionRange(0, 99999);
+            try {
+                document.execCommand('copy');
+                alert("Texto copiado!");
+            } catch (err) {
+                alert("Erro ao copiar.");
+            }
+            window.getSelection().removeAllRanges();
         }
-        window.getSelection().removeAllRanges();
     }
 
     function colarTexto() {
@@ -312,6 +325,9 @@
                     const textoAtual = textArea.value;
                     textArea.value = textoAtual.substring(0, start) + texto + textoAtual.substring(end);
                     textArea.focus();
+                })
+                .catch(() => {
+                    alert("Permissão negada para acessar a área de transferência.");
                 });
         } else {
             alert("Use o atalho nativo para colar (Ctrl+V ou pressionando a tela).");
