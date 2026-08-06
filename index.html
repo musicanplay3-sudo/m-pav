@@ -1,127 +1,330 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>NBM-Vídeos_MP3</title>
-    <link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de Texto</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #f4f7f6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .app-container {
+            position: absolute;
+            top: 1cm;
+            bottom: 1cm;
+            left: 1cm;
+            right: 1cm;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            flex: 1;
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            resize: none;
+            font-size: 16px;
+            box-sizing: border-box;
+            font-family: inherit;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #008CBA;
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .row-file, .row-edit, .row-drive {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .input-filename, .select-folder {
+            flex: 2;
+            min-width: 180px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            box-sizing: border-box;
+            background-color: white;
+        }
+
+        .btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: bold;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, opacity 0.2s;
+            text-align: center;
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        .btn:active {
+            opacity: 0.9;
+        }
+
+        .btn-save { background-color: #4CAF50; }
+        .btn-save:hover { background-color: #45a049; }
+
+        .btn-open {
+            background-color: #008CBA;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .btn-open:hover { background-color: #007bb5; }
+
+        .btn-copy { background-color: #607d8b; }
+        .btn-copy:hover { background-color: #546e7a; }
+
+        .btn-paste { background-color: #9c27b0; }
+        .btn-paste:hover { background-color: #8e24aa; }
+
+        .btn-clear { background-color: #f44336; }
+        .btn-clear:hover { background-color: #d32f2f; }
+
+        /* Botões do Google Drive */
+        .btn-drive-save { background-color: #ff9800; }
+        .btn-drive-save:hover { background-color: #e68a00; }
+
+        .btn-drive-fetch { background-color: #009688; }
+        .btn-drive-fetch:hover { background-color: #00796b; }
+
+        #file-input {
+            display: none;
+        }
+
+        .loading-text {
+            font-size: 12px;
+            color: #666;
+            margin: 0;
+            display: none;
+        }
+    </style>
 </head>
 <body>
 
-    <button class="btn-toggle-sidebar" id="btnToggleSidebar">☰ Filtros</button>
+<div class="app-container">
+    <textarea id="text-area" placeholder="Digite seu texto aqui..."></textarea>
+    
+    <div class="controls">
+        <p id="status" class="loading-text">Processando operação no Google Drive...</p>
 
-    <aside id="sidebar">
-        
-        <h2>Filtros e Busca</h2>
-
-        <div class="form-group">
-            <label for="searchGeneral">Pesquisa Geral:</label>
-            <input type="text" id="searchGeneral" placeholder="Título, compositor, livro...">
-        </div>
-        <div class="form-group">
-            <label for="filterComposer">Compositor:</label>
-            <select id="filterComposer"><option value="">Compositores</option></select>
-        </div>
-        <div class="form-group">
-            <label for="filterBook">Referência:</label>
-            <select id="filterBook"><option value="">Referência</option></select>
-        </div>
-        <div class="form-group">
-            <label>Visualização:</label>
-            <div class="radio-group">
-                <label><input type="radio" name="viewMode" value="all" checked> Todos</label>
-                <label><input type="radio" name="viewMode" value="single"> Individual</label>
-            </div>
-        </div>
-        <button class="btn-clear" id="btnClear">Limpar Filtros</button>
-
-        <!-- PLAYLIST DE VÍDEOS -->
-        <h3>
-            <span>🎬 Fila de Vídeos</span>
-            <button class="toggle-btn" onclick="togglePlaylist('video')">👁️</button>
-        </h3>
-        <div class="playlist-section">
-            <div class="playlist-header">
-                <span>Vídeos</span>
-                <div class="playlist-actions">
-                    <button onclick="savePlaylist('video')">💾</button>
-                    <button onclick="exportPlaylist('video')">📤</button>
-                    <button onclick="clearPlaylist('video')">❌</button>
-                </div>
-            </div>
-            <div class="playlist-list" id="videoPlaylistItems">
-                <div style="color:#bdc3c7;font-size:0.75rem;text-align:center;padding:5px;">Vazia</div>
-            </div>
+        <div class="row-edit">
+            <button class="btn btn-copy" onclick="copiarTexto()">Copiar</button>
+            <button class="btn btn-paste" onclick="colarTexto()">Colar</button>
+            <button class="btn btn-clear" onclick="limparTexto()">Limpar</button>
         </div>
 
-        <!-- PLAYLIST DE MP3 -->
-        <h3>
-            <span>🎵 Fila de MP3</span>
-            <button class="toggle-btn" onclick="togglePlaylist('mp3')">👁️</button>
-        </h3>
-        <div class="playlist-section">
-            <div class="playlist-header">
-                <span>MP3</span>
-                <div class="playlist-actions">
-                    <button onclick="savePlaylist('mp3')">💾</button>
-                    <button onclick="exportPlaylist('mp3')">📤</button>
-                    <button onclick="clearPlaylist('mp3')">❌</button>
-                </div>
-            </div>
-            <div class="playlist-list" id="mp3PlaylistItems">
-                <div style="color:#bdc3c7;font-size:0.75rem;text-align:center;padding:5px;">Vazia</div>
-            </div>
+        <div class="row-drive">
+            <!-- Seletor de Pastas do Google Drive -->
+            <select id="folder-select" class="select-folder">
+                <option value="1pVycKNdIPZc6zRlB2p_iw-gqJI3MJJnH">Pasta: ABC</option>
+                <option value="1fvIA0AxfP6QAw36vtZ6eGLkGGXTvuIMY">Pasta: PDF</option>
+                <option value="1RGmapmjfKUPjZSFqNrw3qn28ORqfJKvm">Pasta: Outros</option>
+            </select>
+            <button class="btn btn-drive-save" onclick="salvarNoGoogleDrive()">Salvar no Drive ☁️</button>
+            <button class="btn btn-drive-fetch" onclick="buscarDoGoogleDrive()">Buscar no Drive 📂</button>
         </div>
-    </aside>
 
-    <div class="resizer" id="resizerLeft"></div>
-
-    <div class="main-wrapper">
-        <main>
-            <div class="header-main">
-                <h1>M-pav</h1>
-                
-                <div class="header-controls">
-                    <button class="btn-toggle-view" id="btnToggleView" onclick="toggleViewMode()">
-                        <span id="viewIcon">☰</span> <span id="viewLabel">Lista</span>
-                    </button>
-                </div>
-            </div>
-            <div class="catalog-list" id="catalogGrid"></div>
-        </main>
-
-        <div class="player-horizontal-container">
-            <div class="player-left" id="playerLeft">
-                <div id="playerPlaceholder" style="color:#666;font-size:0.9rem;text-align:center;padding:10px;">
-                    Selecione uma música
-                </div>
-            </div>
-            <div class="player-right">
-                <div class="now-playing-label">Tocando Agora</div>
-                <h4 id="currentPlayingTitle">Nenhuma música</h4>
-                <p id="currentPlayingMeta">Escolha uma música no catálogo</p>
-                <div class="player-controls">
-                    <button onclick="playPrevious()">⏮ Anterior</button>
-                    <button onclick="playNext()">Próxima ⏭</button>
-                </div>
-            </div>
+        <div class="row-file">
+            <input type="text" id="filename-input" class="input-filename" placeholder="Nome do arquivo" value="documento">
+            <button class="btn btn-save" onclick="salvarArquivoLocal()">Salvar no PC/Celular</button>
+            <label class="btn btn-open">
+                Abrir do Dispositivo
+                <input type="file" id="file-input" accept=".txt" onchange="abrirArquivoLocal(event)">
+            </label>
         </div>
     </div>
+</div>
 
-    <div class="resizer" id="resizerRight" style="display:none;"></div>
+<script>
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwnrj8cxVq1HDCeGlh6lV2lbh7FhkKD-ITbEoyqOQV0GKdEjwngiXVReSaJKCYHx7KGWQ/exec";
 
-    <section class="pdf-preview-panel" id="pdfPreviewPanel">
-        <div class="pdf-preview-header">
-            <h3 id="pdfPreviewTitle">Partitura</h3>
-            <button class="btn-close-preview" id="btnClosePreview">&times;</button>
-        </div>
-        <iframe class="pdf-frame" id="pdfIframe" src=""></iframe>
-    </section>
+    const textArea = document.getElementById('text-area');
+    const filenameInput = document.getElementById('filename-input');
+    const folderSelect = document.getElementById('folder-select');
+    const statusText = document.getElementById('status');
 
-    <script src="js/dados.js"></script>
-    <script src="js/main2.js"></script>
-    <script>
+    function mostrarStatus(texto, mostrar) {
+        statusText.innerText = texto;
+        statusText.style.display = mostrar ? 'block' : 'none';
+    }
+
+    // --- FUNÇÕES DO GOOGLE DRIVE ---
+
+    function salvarNoGoogleDrive() {
+        const texto = textArea.value;
+        let nomeArquivo = filenameInput.value.trim();
+        const pastaId = folderSelect.value;
+        const nomePasta = folderSelect.options[folderSelect.selectedIndex].text;
+
+        if (nomeArquivo === "") nomeArquivo = "documento";
+        if (!nomeArquivo.endsWith('.txt')) nomeArquivo += '.txt';
+
+        mostrarStatus("Salvando arquivo na " + nomePasta + "...", true);
+
+        const dados = {
+            nome: nomeArquivo,
+            conteudo: texto,
+            pastaId: pastaId
+        };
+
+        fetch(WEB_APP_URL, {
+            method: 'POST',
+            mode: 'no-cors', 
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dados)
+        })
+        .then(() => {
+            mostrarStatus("", false);
+            alert("Solicitação enviada! Verifique a " + nomePasta + ". O arquivo '" + nomeArquivo + "' deve aparecer em instantes.");
+        })
+        .catch(erro => {
+            mostrarStatus("", false);
+            console.error(erro);
+            alert("Ocorreu um erro ao tentar salvar no Google Drive.");
+        });
+    }
+
+    function buscarDoGoogleDrive() {
+        let nomeBuscar = prompt("Digite o nome exato do arquivo que deseja buscar do Google Drive:");
         
-    </script>
+        if (!nomeBuscar || nomeBuscar.trim() === "") {
+            return; 
+        }
+
+        nomeBuscar = nomeBuscar.trim();
+        if (!nomeBuscar.endsWith('.txt')) {
+            nomeBuscar += '.txt';
+        }
+
+        const pastaId = folderSelect.value;
+        const nomePasta = folderSelect.options[folderSelect.selectedIndex].text;
+
+        mostrarStatus("Buscando arquivo '" + nomeBuscar + "' na " + nomePasta + "...", true);
+
+        const urlComParametros = WEB_APP_URL + "?nome=" + encodeURIComponent(nomeBuscar) + "&pastaId=" + encodeURIComponent(pastaId);
+
+        fetch(urlComParametros)
+        .then(resposta => resposta.json())
+        .then(dados => {
+            mostrarStatus("", false);
+            
+            if (dados.status === "sucesso") {
+                textArea.value = dados.conteudo;
+                filenameInput.value = dados.nome.replace(/\.[^/.]+$/, "");
+                alert("Arquivo '" + dados.nome + "' carregado com sucesso da " + nomePasta + "!");
+            } else if (dados.status === "nao_encontrado") {
+                alert(dados.mensagem);
+            } else {
+                alert("Erro retornado pelo servidor: " + dados.mensagem);
+            }
+        })
+        .catch(erro => {
+            mostrarStatus("", false);
+            console.error(erro);
+            alert("Não foi possível conectar ao Google Drive ou ler o arquivo.");
+        });
+    }
+
+    // --- FUNÇÕES TRADICIONAIS (LOCAIS) ---
+
+    function salvarArquivoLocal() {
+        const texto = textArea.value;
+        let nomeArquivo = filenameInput.value.trim();
+
+        if (nomeArquivo === "") nomeArquivo = "documento";
+        if (!nomeArquivo.endsWith('.txt')) nomeArquivo += '.txt';
+
+        const blob = new Blob([texto], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = nomeArquivo;
+        link.click();
+        URL.revokeObjectURL(link.href);
+    }
+
+    function abrirArquivoLocal(event) {
+        const input = event.target;
+        const file = input.files[0];
+        if (!file) return;
+
+        const leitor = new FileReader();
+        leitor.onload = function(e) {
+            textArea.value = e.target.result;
+            filenameInput.value = file.name.replace(/\.[^/.]+$/, "");
+        };
+        leitor.readAsText(file);
+        input.value = ''; 
+    }
+
+    function copiarTexto() {
+        if (textArea.value.trim() === "") {
+            alert("Não há texto para copiar!");
+            return;
+        }
+        textArea.select();
+        textArea.setSelectionRange(0, 99999);
+        try {
+            document.execCommand('copy');
+            alert("Texto copiado!");
+        } catch (err) {
+            alert("Erro ao copiar.");
+        }
+        window.getSelection().removeAllRanges();
+    }
+
+    function colarTexto() {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.readText()
+                .then(texto => {
+                    const start = textArea.selectionStart;
+                    const end = textArea.selectionEnd;
+                    const textoAtual = textArea.value;
+                    textArea.value = textoAtual.substring(0, start) + texto + textoAtual.substring(end);
+                    textArea.focus();
+                });
+        } else {
+            alert("Use o atalho nativo para colar (Ctrl+V ou pressionando a tela).");
+        }
+    }
+
+    function limparTexto() {
+        if (textArea.value !== "" && confirm("Deseja apagar tudo?")) {
+            textArea.value = "";
+            textArea.focus();
+        }
+    }
+</script>
+
 </body>
 </html>
