@@ -144,6 +144,7 @@ const musicDatabase = [
 { id: 24137, title: "24137 - The Daily Comics", composer: "John W. Schaum", book: "6936 - PDF", pdfUrl: "partituras/24137.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24138, title: "24138 - Putting Salt on a Bird's Tail", composer: "John W. Schaum", book: "6936 - PDF", pdfUrl: "partituras/24138.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24139, title: "24139 - On the Levee", composer: "Old American Song", book: "6936 - PDF", pdfUrl: "partituras/24139.pdf", youtubeUrl: "", mp3Url: "" },
+
 { id: 24140, title: "24140 - Come On, Rangers", composer: "Gioachino Rossini", book: "6937 - PDF", pdfUrl: "partituras/24140.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24141, title: "24141 - Camptown Races", composer: "Stephen Foster", book: "6937 - PDF", pdfUrl: "partituras/24141.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24142, title: "24142 - Puppets on Parade", composer: "Oesten", book: "6937 - PDF", pdfUrl: "partituras/24142.pdf", youtubeUrl: "", mp3Url: "" },
@@ -176,6 +177,24 @@ const musicDatabase = [
 { id: 24169, title: "24169 - To a Charming Senorita", composer: "Tchaikowsky", book: "6937 - PDF", pdfUrl: "partituras/24169.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24170, title: "24170 - Wishing Well", composer: "Wolfgang Amadeus Mozart", book: "6937 - PDF", pdfUrl: "partituras/24170.pdf", youtubeUrl: "", mp3Url: "" },
 { id: 24171, title: "24171 - Hawaiian Love Song", composer: "Truax", book: "6937 - PDF", pdfUrl: "partituras/24171.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24172, title: "24172 - Pink Clouds", composer: "James Bastien", book: "7363 - PDF", pdfUrl: "partituras/24172.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24173, title: "24173 - Throwing Snowballs", composer: "James Bastien", book: "7363 - PDF", pdfUrl: "partituras/24173.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24174, title: "24174 - Coronation March", composer: "James Bastien", book: "7363 - PDF", pdfUrl: "partituras/24174.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24175, title: "24175 - Misty Moon", composer: "James Bastien", book: "7363 - PDF", pdfUrl: "partituras/24175.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24176, title: "24176 - T.I. Boogie", composer: "James Bastien", book: "7363 - PDF", pdfUrl: "partituras/24176.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24177, title: "24177 - Up Hill Race", composer: "James Bastien", book: "7363 - PDF", pdfUrl: "partituras/24177.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24178, title: "24178 - Classic Encounter", composer: "James Bastien", book: "7363 - PDF", pdfUrl: "partituras/24178.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24179, title: "24179 - The Palace Gardens", composer: "James Bastien", book: "7363 - PDF", pdfUrl: "partituras/24179.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24180, title: "24180 - Minuet", composer: "Wolfgang Amadeus Mozart", book: "7363 - PDF", pdfUrl: "partituras/24180.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24181, title: "24181 - Easy Livin'", composer: "James Bastien", book: "7363 - PDF", pdfUrl: "partituras/24181.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24182, title: "24182 - T.V. Quiz Show", composer: "James Bastien", book: "7363 - PDF", pdfUrl: "partituras/24182.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24183, title: "24183 - Turkey in the Straw", composer: "James Bastien", book: "7363 - PDF", pdfUrl: "partituras/24183.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24184, title: "24184 - Hernando's Hideaway", composer: "Richard Adler & Jerry Ross", book: "7363 - PDF", pdfUrl: "partituras/24184.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24185, title: "24185 - Stately Giraffes", composer: "James Bastien", book: "7363 - PDF", pdfUrl: "partituras/24185.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24186, title: "24186 - The Roaming Cowboy", composer: "James Bastien", book: "7363 - PDF", pdfUrl: "partituras/24186.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24187, title: "24187 - Battle Hymn of the Republic", composer: "William Steffe", book: "7363 - PDF", pdfUrl: "partituras/24187.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24188, title: "24188 - Water Lilies", composer: "James Bastien", book: "7363 - PDF", pdfUrl: "partituras/24188.pdf", youtubeUrl: "", mp3Url: "" },
+{ id: 24189, title: "24189 - When the Saints Go Marching In", composer: "Traditional", book: "7363 - PDF", pdfUrl: "partituras/24189.pdf", youtubeUrl: "", mp3Url: "" }
 
 ];
 function getYouTubeId(url) {
